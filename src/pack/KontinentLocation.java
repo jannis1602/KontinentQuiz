@@ -17,7 +17,6 @@ import java.util.Random;
 import javax.swing.JFrame;
 
 import Image.BufferedImageLoader;
-import Image.MouseInput;
 
 public class KontinentLocation extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
@@ -25,7 +24,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	private Thread thread;
 	public static JFrame frame;
 	private BufferedImageLoader imgLoader;
-	private String[] kontinente = { "afrika2", "antarktis", "asien", "australien", "europa", "nordamerika",
+	private String[] kontinente = { "afrika", "antarktis", "asien", "australien", "europa", "nordamerika",
 			"südamerika", };
 
 	public LinkedList<Btn> btnList;
@@ -39,7 +38,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	private String end = null;
 
 	public KontinentLocation() {
-		System.out.println(getPixelInImage(new Point(100, 100), new BufferedImageLoader().loadImage("afrika2.png")));
+//		System.out.println(getPixelInImage(new Point(100, 100), new BufferedImageLoader().loadImage("afrika2.png")));
 //		System.out.println(new BufferedImageLoader().loadImage("afrika2.png").getColorModel().hasAlpha() + " - "
 //				+ isTransparent(new BufferedImageLoader().loadImage("afrika2.png"), 50, 50));
 		start();
@@ -98,10 +97,18 @@ public class KontinentLocation extends Canvas implements Runnable {
 			kontinentList.add(k);
 		}
 
+		System.out.println(frame.getWidth() / 7);
 		int rec = frame.getWidth() / 7;
 		for (int i = 0; i < 7; i++) {
-			System.out.println((frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f);
+//			System.out.println((frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f);
+//			kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f;
+//			kontinentList.get(i).image = scale(kontinentList.get(i).originalImage, frame.getWidth() / 7,
+//					frame.getWidth() / 7);
+//			kontinentList.get(i).image = scale(kontinentList.get(i).originalImage, frame.getWidth() / 7,
+//					frame.getWidth() / 7);
 			kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f;
+//			System.out.println((frame.getWidth() / 7f) + " - " + kontinentList.get(i).image.getWidth() * 1f);
+//			System.out.println("size: " + kontinentList.get(i).size);
 			kontinentList.get(i).p = new Point(w() / 7 * i, h() - rec);
 		}
 
@@ -110,6 +117,17 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 //		selectedKontinent = kontinentList.getFirst();
 
+	}
+
+	public static BufferedImage scale(BufferedImage imageToScale, int dWidth, int dHeight) {
+		BufferedImage scaledImage = null;
+		if (imageToScale != null) {
+			scaledImage = new BufferedImage(dWidth, dHeight, imageToScale.getType());
+			Graphics2D graphics2D = scaledImage.createGraphics();
+			graphics2D.drawImage(imageToScale, 0, 0, dWidth, dHeight, null);
+			graphics2D.dispose();
+		}
+		return scaledImage;
 	}
 
 	private BufferedImage loadImage(String name) {
@@ -215,6 +233,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 		for (int i = 0; i < 7; i++) {
 			kontinentList.get(i).render(g, w() / 7 * i, h() - rec, w() / 7, rec);
 		}
+		if (selectedKontinent != null)
+			selectedKontinent.render(g, w() / 7, h() - rec, w() / 7, rec);
 
 		PointerInfo a = MouseInfo.getPointerInfo();
 		Point b = a.getLocation();
@@ -257,10 +277,11 @@ public class KontinentLocation extends Canvas implements Runnable {
 	}
 
 	public void triggerBtn(String id) {
+//		System.out.println("btnTrigger: " + id);
 		switch (id) {
 		case "rotateBtn":
 			if (selectedKontinent != null)
-				selectedKontinent.image = rotateImage(selectedKontinent.image, 90.0);
+				selectedKontinent.originalImage = rotateImage(selectedKontinent.originalImage, 90.0);
 			break;
 		case "checkBtn":
 			if (selectedKontinent == null) {
@@ -343,6 +364,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 	}
 
+//TODO NEU!!!
+
 	private boolean getSolution(String name, Point p, float s) { // kontinent
 		Point point = new Point(0, 0);
 		Float scale = 0.0f;
@@ -379,7 +402,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 			break;
 		}
 		Float sc = (s - scale);
-		System.out.println(name + " - " + Point.distance(p.x, p.y, point.x, point.y) + " - " + s + " diff: " + sc);
+		System.out.println(
+				name + " - distance(+-20) " + Point.distance(p.x, p.y, point.x, point.y) + " diff scale(+-8): " + sc);
 		if (Point.distance(p.x, p.y, point.x, point.y) < 20 && (s - scale < 0.08f && s - scale > -0.08f))
 			return true;
 		else

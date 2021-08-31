@@ -1,4 +1,4 @@
-package Image;
+package pack;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -6,9 +6,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-
-import pack.Btn;
-import pack.KontinentLocation;
 
 public class MouseInput implements MouseListener, MouseMotionListener, MouseWheelListener {
 
@@ -51,7 +48,7 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 	public void mousePressed(MouseEvent e) {
 		x = e.getX();
 		y = e.getY();
-		// System.out.println(x + " - " + y);
+//		System.out.println(x + " - " + y);
 		for (Btn tempBtn : kontinentLocation.btnList) {
 			if (tempBtn.checkBox(new Point(x, y)) != null) {
 				kontinentLocation.triggerBtn(tempBtn.checkBox(new Point(x, y)));
