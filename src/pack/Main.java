@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
+import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,7 +29,7 @@ import javax.swing.JTextField;
 import Image.BufferedImageLoader;
 
 public class Main {
-	public static final String version = "0.1.2";
+	public static final String version = "0.1.3";
 	private JLabel labelImg;
 	private JTextField tf;
 	JLabel labelRichtig, labelFalsch;
@@ -42,25 +43,63 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		// https://github.com/jannis1602/KontinentQuiz/releases/download/v.0.1.1/KontinentQuiz.jar
+		// https://api.github.com/repos/jannis1602/KontinentQuiz/releases
 
-		try (BufferedInputStream in = new BufferedInputStream(
-				new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/v.0.1.1/KontinentQuiz.jar")
-						.openStream());
-				FileOutputStream fileOutputStream = new FileOutputStream(
-						getJarExecutionDirectory() + "\\KontinentQuiz.jar")) {
-			byte dataBuffer[] = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-				fileOutputStream.write(dataBuffer, 0, bytesRead);
+		// System.out.println(getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases"));
+
+		int v = Integer.parseInt(version.replaceAll("[^0-9]", ""));
+		int rv = Integer
+				.parseInt(getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases")
+						.replaceAll("[^0-9]", ""));
+		System.out.println("check for updates " + v + " -> " + rv);
+
+//TODO request update window
+		if (v < rv) {
+			String versionTag = getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
+			System.out.println("versionTag: " + versionTag);
+			try (BufferedInputStream in = new BufferedInputStream(
+					new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/" + versionTag
+							+ "/KontinentQuiz.jar").openStream());
+					FileOutputStream fileOutputStream = new FileOutputStream(
+							getJarExecutionDirectory() + "\\KontinentQuiz.jar")) {
+				byte dataBuffer[] = new byte[1024];
+				int bytesRead;
+				while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+					fileOutputStream.write(dataBuffer, 0, bytesRead);
+				}
+				System.exit(0);
+				Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz.jar");
+
+			} catch (IOException e) {
 			}
-			Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz.jar");
-
-		} catch (IOException e) {
 		}
 
 		// new Main();
 		new KontinentLocation();
+	}
+
+	private static String replaceAll(String string, String string2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static String getLastReleaseVersion(String webseite) {
+		String releaseVersion = null;
+		try {
+			URL url = new URL(webseite);
+			Scanner scanner = new Scanner(url.openStream());
+			String s = null;
+			while (scanner.hasNext()) {
+				s = scanner.next();
+				if (s.contains("html_url")) {
+					releaseVersion = s.split("/tag/v.")[1].split("\",")[0];
+					break;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return releaseVersion;
 	}
 
 	public static String getJarExecutionDirectory() {
