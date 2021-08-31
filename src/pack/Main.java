@@ -12,6 +12,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
@@ -24,21 +28,53 @@ import javax.swing.JTextField;
 import Image.BufferedImageLoader;
 
 public class Main {
+	public static final String version = "0.1.2";
 	private JLabel labelImg;
 	private JTextField tf;
-	JLabel labelRichtig,labelFalsch;
+	JLabel labelRichtig, labelFalsch;
 	private BufferedImageLoader imgLoader;
 	private int richtig = 0;
 	private int falsch = 0;
-
 
 	private String[] kontinente = { "afrika", "antarktis", "asien", "australien", "europa", "nordamerika",
 			"südamerika", };
 	private String kontinent = null;
 
 	public static void main(String[] args) {
-		//new Main();
+
+		// https://github.com/jannis1602/KontinentQuiz/releases/download/v.0.1.1/KontinentQuiz.jar
+
+		try (BufferedInputStream in = new BufferedInputStream(
+				new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/v.0.1.1/KontinentQuiz.jar")
+						.openStream());
+				FileOutputStream fileOutputStream = new FileOutputStream(
+						getJarExecutionDirectory() + "\\KontinentQuiz.jar")) {
+			byte dataBuffer[] = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+				fileOutputStream.write(dataBuffer, 0, bytesRead);
+			}
+			Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz.jar");
+
+		} catch (IOException e) {
+		}
+
+		// new Main();
 		new KontinentLocation();
+	}
+
+	public static String getJarExecutionDirectory() {
+		String jarFile = null;
+		String jarDirectory = null;
+		int cutFileSeperator = 0;
+		int cutSemicolon = -1;
+		jarFile = System.getProperty("java.class.path");
+		System.out.println(jarFile);
+		cutFileSeperator = jarFile.lastIndexOf(System.getProperty("file.separator"));
+		jarDirectory = jarFile.substring(0, cutFileSeperator);
+		cutSemicolon = jarDirectory.lastIndexOf(';');
+		jarDirectory = jarDirectory.substring(cutSemicolon + 1, jarDirectory.length());
+		return jarDirectory + System.getProperty("file.separator");
 	}
 
 	public Main() {
@@ -136,11 +172,11 @@ public class Main {
 		if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent)) {
 			System.out.println("True");
 			richtig++;
-			labelRichtig.setText("Richtig:"+richtig);
+			labelRichtig.setText("Richtig:" + richtig);
 			loadImage();
-		}else {
+		} else {
 			falsch++;
-			labelFalsch.setText("Falsch:"+falsch);
+			labelFalsch.setText("Falsch:" + falsch);
 		}
 		tf.setText(null);
 	}
