@@ -23,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -74,13 +75,22 @@ public class Main {
 			}
 		}
 
+		Object[] options = { "Kontinente erkennen", "Kontinente platzieren" };
+		int n = JOptionPane.showOptionDialog(null, "Modus wählen...", "Kontinent Quiz Launcher",
+				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		switch (n) {
+		case 0:
+			new Main();
+			break;
+		case 1:
+			new KontinentLocation();
+			break;
+		default:
+			System.exit(0);
+			break;
+		}
 		// new Main();
-		new KontinentLocation();
-	}
-
-	private static String replaceAll(String string, String string2) {
-		// TODO Auto-generated method stub
-		return null;
+		// new KontinentLocation();
 	}
 
 	public static String getLastReleaseVersion(String webseite) {

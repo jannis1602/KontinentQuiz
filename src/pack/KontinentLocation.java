@@ -22,11 +22,10 @@ import Image.MouseInput;
 public class KontinentLocation extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 	private boolean running;
-	private int fps = 0;
 	private Thread thread;
 	public static JFrame frame;
 	private BufferedImageLoader imgLoader;
-	private String[] kontinente = { "afrika", "antarktis", "asien", "australien", "europa", "nordamerika",
+	private String[] kontinente = { "afrika2", "antarktis", "asien", "australien", "europa", "nordamerika",
 			"südamerika", };
 
 	public LinkedList<Btn> btnList;
@@ -40,12 +39,15 @@ public class KontinentLocation extends Canvas implements Runnable {
 	private String end = null;
 
 	public KontinentLocation() {
+		System.out.println(getPixelInImage(new Point(100, 100), new BufferedImageLoader().loadImage("afrika2.png")));
+//		System.out.println(new BufferedImageLoader().loadImage("afrika2.png").getColorModel().hasAlpha() + " - "
+//				+ isTransparent(new BufferedImageLoader().loadImage("afrika2.png"), 50, 50));
 		start();
 	}
 
 	private void init() {
 		imgLoader = new BufferedImageLoader();
-		temp = new BufferedImageLoader().loadImage("7-Kontinente-1.jpg");
+		temp = new BufferedImageLoader().loadImage("Kontinente.png");
 		// load Images
 		kontinentList = new LinkedList<Kontinent>();
 		Random r = new Random();
@@ -79,7 +81,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		// Toolkit.getDefaultToolkit().createCustomCursor(customImage, new Point(0, 0),
 		// "customCursor");
 		// frame.setCursor(customCursor);
-		frame.setSize(1600 / 2, 900 / 2);
+		frame.setSize(1920 / 2, 1080 / 2);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -98,6 +100,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 		int rec = frame.getWidth() / 7;
 		for (int i = 0; i < 7; i++) {
+			System.out.println((frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f);
+			kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f;
 			kontinentList.get(i).p = new Point(w() / 7 * i, h() - rec);
 		}
 
@@ -140,20 +144,19 @@ public class KontinentLocation extends Canvas implements Runnable {
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
 		long timer = System.currentTimeMillis();
-		int frames = 0;
+//		int frames = 0;
 		while (running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
 			lastTime = now;
 			while (delta >= 1) {
 				render();
-				frames++;
+//				frames++;
 				delta--;
 			}
 			if (System.currentTimeMillis() - timer > 1000) {
 				timer = System.currentTimeMillis();
-				fps = frames;
-				frames = 0;
+//				frames = 0;
 			}
 		}
 		stop();
@@ -215,17 +218,20 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 		PointerInfo a = MouseInfo.getPointerInfo();
 		Point b = a.getLocation();
+//		 + 16 * 2, + 24 * 2 + 15
 		int mx = (int) b.getX();// + Game.frame.getLocationOnScreen().x;
 		int my = (int) b.getY();// + Game.frame.getLocationOnScreen().y;
 
 		if (selectedKontinent != null) {
-			selectedKontinent.mouse(mx, my);
+			selectedKontinent.mouse(mx, my - 23);
 			// selectedKontinent.p = new Point(mx, my);
 			// selectedKontinent.render(g, mx, my, 300, 300);
 
 		}
-		if (end != null)
-			g.drawString(end, 200, 200);
+		if (end != null) {
+			g.setColor(Color.RED);
+			g.drawString(end, 20, 20);
+		}
 
 		g.dispose();
 		bs.show();
@@ -274,9 +280,11 @@ public class KontinentLocation extends Canvas implements Runnable {
 	public void checkKontinentBox(Point p) {
 		if (selectedKontinent == null) {
 			for (Kontinent k : kontinentList) {
-				if (k.boxIsTouched(p.x, p.y)) {// && getPixelInImage(new Point(p.x - k.p.x, p.y - k.p.y), k.image)
+				if (k.boxIsTouched(p.x, p.y) && getPixelInImage(new Point(p.x - k.p.x, p.y - k.p.y), k.image)) {
+					// && getPixelInImage(new Point(p.x - k.p.x, p.y - k.p.y), k.image)
 					selectedKontinent = k;
 					k.select(p.x, p.y);
+					end = null;
 				}
 			}
 		} else {
@@ -294,8 +302,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		int blue = clr & 0x000000ff;
 
 		System.out.println("RGB Color: " + p.x + "|" + p.y + " -> " + alpha + "-" + red + "-" + green + "-" + blue);
-
-		if (red == 0 && green == 0 && blue == 0)
+		if (red != 0 || green != 0 || blue != 0)
 			return true;
 		else
 			return false;
