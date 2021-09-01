@@ -2,9 +2,12 @@ package pack;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,10 +15,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -29,8 +36,12 @@ import javax.swing.JTextField;
 
 import Image.BufferedImageLoader;
 
+/*
+ * Jannis Mattlage 
+ */
+
 public class Main {
-	public static final String version = "0.1.3";
+	public static final String version = "0.1.4";
 	private JLabel labelImg;
 	private JTextField tf;
 	JLabel labelRichtig, labelFalsch;
@@ -38,15 +49,22 @@ public class Main {
 	private int richtig = 0;
 	private int falsch = 0;
 
+	static JFrame modiFrame;
+
 	private String[] kontinente = { "afrika", "antarktis", "asien", "australien", "europa", "nordamerika",
 			"südamerika", };
 	private String kontinent = null;
 
 	public static void main(String[] args) {
-
-		// https://api.github.com/repos/jannis1602/KontinentQuiz/releases
-
-		// System.out.println(getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases"));
+		if (args.length >= 1) {
+			try {
+				File file = new File(args[0]);
+				file.delete();
+				System.out.println("File deleted: " + args[0]);
+			} catch (Exception e) {
+				System.out.println("File Error!");
+			}
+		}
 
 		int v = Integer.parseInt(version.replaceAll("[^0-9]", ""));
 		int rv = Integer
@@ -54,41 +72,122 @@ public class Main {
 						.replaceAll("[^0-9]", ""));
 		System.out.println("check for updates " + v + " -> " + rv);
 
+		File filePath = null;
+		try {
+			filePath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			System.out.println("FilePath: " + filePath);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
 //TODO request update window
 		if (v < rv) {
-			String versionTag = getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
-			System.out.println("versionTag: " + versionTag);
-			try (BufferedInputStream in = new BufferedInputStream(
-					new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/" + versionTag
-							+ "/KontinentQuiz.jar").openStream());
-					FileOutputStream fileOutputStream = new FileOutputStream(
-							getJarExecutionDirectory() + "\\KontinentQuiz.jar")) {
-				byte dataBuffer[] = new byte[1024];
-				int bytesRead;
-				while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-					fileOutputStream.write(dataBuffer, 0, bytesRead);
-				}
+			String serverVersionTag = getLastReleaseVersion(
+					"https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
+			System.out.println("Server versionTag: " + serverVersionTag);
+
+			InputStream ins;
+			try {
+				ins = new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/v." + serverVersionTag
+						+ "/KontinentQuiz.jar").openStream();
+				Files.copy(ins, Paths.get(getJarExecutionDirectory() + "\\KontinentQuiz-" + serverVersionTag + ".jar"),
+						StandardCopyOption.REPLACE_EXISTING);
+				Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz-"
+						+ serverVersionTag + ".jar " + filePath);
+				Thread.sleep(200);
 				System.exit(0);
-				Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz.jar");
-
-			} catch (IOException e) {
+			} catch (Exception e1) {
+				e1.printStackTrace();
 			}
-		}
 
-		Object[] options = { "Kontinente erkennen", "Kontinente platzieren" };
-		int n = JOptionPane.showOptionDialog(null, "Modus wählen...", "Kontinent Quiz Launcher",
-				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-		switch (n) {
-		case 0:
-			new Main();
-			break;
-		case 1:
-			new KontinentLocation();
-			break;
-		default:
-			System.exit(0);
-			break;
+//			try {
+//				BufferedInputStream in = new BufferedInputStream(
+//						new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/" + versionTag
+//								+ "/KontinentQuiz.jar").openStream());
+//				FileOutputStream fileOutputStream = new FileOutputStream(
+//						getJarExecutionDirectory() + "\\KontinentQuizNEW.jar");
+//				byte dataBuffer[] = new byte[16384];
+//				int bytesRead;
+//				while ((bytesRead = in.read(dataBuffer, 0, 16384)) != -1) {
+//					fileOutputStream.write(dataBuffer, 0, bytesRead);
+//				}
+////				Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz.jar");
+////				System.exit(0);
+//
+//			} catch (Exception e) {
+//				System.out.println(e.getMessage());
+//			}
+		} else {
+
+//		JFrame f = new JFrame();
+//		f.setSize(1, 1);
+//		f.setLocationRelativeTo(null);
+//		f.setVisible(true);
+
+			modiFrame = new JFrame("Kontinent Quiz Launcher");
+			JButton jb1 = new JButton("Kontinente erkennen");
+			JButton jb2 = new JButton("Kontinente platzieren");
+			JButton jb3 = new JButton("Kontinentnamen zuordnen");
+			jb1.setFont(new Font("Arial", Font.PLAIN, 40));
+			jb2.setFont(new Font("Arial", Font.PLAIN, 40));
+			jb3.setFont(new Font("Arial", Font.PLAIN, 40));
+			jb1.setActionCommand("erkennen");
+			jb2.setActionCommand("platzieren");
+			jb3.setActionCommand("zuordnen");
+
+			ActionListener al = new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					switch (e.getActionCommand()) {
+					case "erkennen":
+						new Main();
+						modiFrame.setVisible(false);
+						break;
+					case "platzieren":
+						new KontinentLocation();
+						modiFrame.setVisible(false);
+						break;
+					case "zuordnen":
+						JOptionPane.showMessageDialog(modiFrame, "noch in Arbeit");
+						break;
+					default:
+						System.exit(0);
+						break;
+					}
+				}
+			};
+
+			jb1.addActionListener(al);
+			jb2.addActionListener(al);
+			jb3.addActionListener(al);
+
+			JPanel panel = new JPanel();
+			panel.setLayout(new GridLayout(3, 1));
+			panel.add(jb1);
+			panel.add(jb2);
+			panel.add(jb3);
+			modiFrame.add(panel);
+			modiFrame.setVisible(true);
+			modiFrame.pack();
+			modiFrame.setLocationRelativeTo(null);
+
+//			Object[] options = { "Kontinente erkennen", "Kontinente platzieren" };
+//			int n = JOptionPane.showOptionDialog(null, "Modus wählen...", "Kontinent Quiz Launcher",
+//					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+//			switch (n) {
+//			case 0:
+//				new Main();
+//				break;
+//			case 1:
+//				new KontinentLocation();
+//				break;
+//			default:
+//				System.exit(0);
+//				break;
+//			}
 		}
+//		f = null;
 		// new Main();
 		// new KontinentLocation();
 	}
@@ -112,13 +211,32 @@ public class Main {
 		return releaseVersion;
 	}
 
+	public static String getReleaseVersion(String webseite) {
+		String releaseVersion = null;
+		try {
+			URL url = new URL(webseite);
+			Scanner scanner = new Scanner(url.openStream());
+			String s = null;
+			while (scanner.hasNext()) {
+				s = scanner.next();
+				if (s.contains("/jannis1602/KontinentQuiz/releases/tag/")) {
+					System.out.println(s);
+					releaseVersion = s.split("/jannis1602/KontinentQuiz/releases/tag/v.")[1].split("\">")[0];
+					break;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return releaseVersion;
+	}
+
 	public static String getJarExecutionDirectory() {
 		String jarFile = null;
 		String jarDirectory = null;
 		int cutFileSeperator = 0;
 		int cutSemicolon = -1;
 		jarFile = System.getProperty("java.class.path");
-		System.out.println(jarFile);
 		cutFileSeperator = jarFile.lastIndexOf(System.getProperty("file.separator"));
 		jarDirectory = jarFile.substring(0, cutFileSeperator);
 		cutSemicolon = jarDirectory.lastIndexOf(';');
@@ -135,8 +253,8 @@ public class Main {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		BufferedImage img = imgLoader.loadImage("afrika.png");
 
-		labelRichtig = new JLabel("Richtig:0");
-		labelFalsch = new JLabel("Falsch:0");
+		labelRichtig = new JLabel(" Richtig:0");
+		labelFalsch = new JLabel(" Falsch:0");
 
 		GridBagConstraints c0 = new GridBagConstraints();
 		c0.fill = GridBagConstraints.BOTH;
@@ -221,11 +339,11 @@ public class Main {
 		if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent)) {
 			System.out.println("True");
 			richtig++;
-			labelRichtig.setText("Richtig:" + richtig);
+			labelRichtig.setText(" Richtig:" + richtig);
 			loadImage();
 		} else {
 			falsch++;
-			labelFalsch.setText("Falsch:" + falsch);
+			labelFalsch.setText(" Falsch:" + falsch);
 		}
 		tf.setText(null);
 	}
