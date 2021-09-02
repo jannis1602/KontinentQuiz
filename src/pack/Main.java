@@ -65,10 +65,11 @@ public class Main {
 			}
 		}
 
+		String serverReleaseVersion = getLastReleaseVersion(
+				"https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
+
 		int v = Integer.parseInt(version.replaceAll("[^0-9]", ""));
-		int rv = Integer
-				.parseInt(getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases")
-						.replaceAll("[^0-9]", ""));
+		int rv = Integer.parseInt(serverReleaseVersion.replaceAll("[^0-9]", ""));
 		System.out.println("check for updates " + v + " -> " + rv);
 
 		File filePath = null;
@@ -79,97 +80,79 @@ public class Main {
 			e.printStackTrace();
 		}
 
-//TODO request update window
-		if (v < rv) {
-			String serverVersionTag = getLastReleaseVersion(
-					"https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
-			System.out.println("Server versionTag: " + serverVersionTag);
+		modiFrame = new JFrame("Kontinent Quiz Launcher");
+		JButton jb1 = new JButton("Kontinente erkennen");
+		JButton jb2 = new JButton("Kontinente platzieren");
+		JButton jb3 = new JButton("Kontinentnamen zuordnen");
+		jb1.setFont(new Font("Arial", Font.PLAIN, 40));
+		jb2.setFont(new Font("Arial", Font.PLAIN, 40));
+		jb3.setFont(new Font("Arial", Font.PLAIN, 40));
+		jb1.setActionCommand("erkennen");
+		jb2.setActionCommand("platzieren");
+		jb3.setActionCommand("zuordnen");
 
-			InputStream ins;
-			try {
-				ins = new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/v." + serverVersionTag
-						+ "/KontinentQuiz.jar").openStream();
-				Files.copy(ins, Paths.get(getJarExecutionDirectory() + "\\KontinentQuiz-" + serverVersionTag + ".jar"),
-						StandardCopyOption.REPLACE_EXISTING);
-				Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz-"
-						+ serverVersionTag + ".jar " + filePath);
-				Thread.sleep(200);
-				System.exit(0);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+		ActionListener al = new ActionListener() {
 
-//			try {
-//				BufferedInputStream in = new BufferedInputStream(
-//						new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/" + versionTag
-//								+ "/KontinentQuiz.jar").openStream());
-//				FileOutputStream fileOutputStream = new FileOutputStream(
-//						getJarExecutionDirectory() + "\\KontinentQuizNEW.jar");
-//				byte dataBuffer[] = new byte[16384];
-//				int bytesRead;
-//				while ((bytesRead = in.read(dataBuffer, 0, 16384)) != -1) {
-//					fileOutputStream.write(dataBuffer, 0, bytesRead);
-//				}
-////				Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz.jar");
-////				System.exit(0);
-//
-//			} catch (Exception e) {
-//				System.out.println(e.getMessage());
-//			}
-		} else {
-
-//		JFrame f = new JFrame();
-//		f.setSize(1, 1);
-//		f.setLocationRelativeTo(null);
-//		f.setVisible(true);
-
-			modiFrame = new JFrame("Kontinent Quiz Launcher");
-			JButton jb1 = new JButton("Kontinente erkennen");
-			JButton jb2 = new JButton("Kontinente platzieren");
-			JButton jb3 = new JButton("Kontinentnamen zuordnen");
-			jb1.setFont(new Font("Arial", Font.PLAIN, 40));
-			jb2.setFont(new Font("Arial", Font.PLAIN, 40));
-			jb3.setFont(new Font("Arial", Font.PLAIN, 40));
-			jb1.setActionCommand("erkennen");
-			jb2.setActionCommand("platzieren");
-			jb3.setActionCommand("zuordnen");
-
-			ActionListener al = new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					switch (e.getActionCommand()) {
-					case "erkennen":
-						new Main();
-						modiFrame.setVisible(false);
-						break;
-					case "platzieren":
-						new KontinentLocation();
-						modiFrame.setVisible(false);
-						break;
-					case "zuordnen":
-						JOptionPane.showMessageDialog(modiFrame, "noch in Arbeit");
-						break;
-					default:
-						System.exit(0);
-						break;
-					}
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switch (e.getActionCommand()) {
+				case "erkennen":
+					new Main();
+					modiFrame.setVisible(false);
+					break;
+				case "platzieren":
+					new KontinentLocation();
+					modiFrame.setVisible(false);
+					break;
+				case "zuordnen":
+					JOptionPane.showMessageDialog(modiFrame, "noch in Arbeit");
+					break;
+				default:
+					System.exit(0);
+					break;
 				}
-			};
+			}
+		};
 
-			jb1.addActionListener(al);
-			jb2.addActionListener(al);
-			jb3.addActionListener(al);
+		jb1.addActionListener(al);
+		jb2.addActionListener(al);
+		jb3.addActionListener(al);
 
-			JPanel panel = new JPanel();
-			panel.setLayout(new GridLayout(3, 1));
-			panel.add(jb1);
-			panel.add(jb2);
-			panel.add(jb3);
-			modiFrame.add(panel);
-			modiFrame.setVisible(true);
-			modiFrame.pack();
-			modiFrame.setLocationRelativeTo(null);
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(3, 1));
+		panel.add(jb1);
+		panel.add(jb2);
+		panel.add(jb3);
+		modiFrame.add(panel);
+		modiFrame.setVisible(true);
+		modiFrame.pack();
+		modiFrame.setLocationRelativeTo(null);
+
+// request update			
+		if (v < rv) {
+			int option = JOptionPane.showConfirmDialog(modiFrame,
+					"Update to v." + serverReleaseVersion.replaceAll("[^0-9.]", ""), "Update?",
+					JOptionPane.YES_NO_OPTION);
+			System.out.println(option);
+			if (option == 0) {
+
+				System.out.println("Server versionTag: " + serverReleaseVersion);
+
+				try {
+					InputStream in = new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/v."
+							+ serverReleaseVersion + "/KontinentQuiz.jar").openStream();
+					Files.copy(in,
+							Paths.get(getJarExecutionDirectory() + "\\KontinentQuiz-" + serverReleaseVersion + ".jar"),
+							StandardCopyOption.REPLACE_EXISTING);
+					Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz-"
+							+ serverReleaseVersion + ".jar " + filePath);
+					Thread.sleep(200);
+					System.exit(0);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
 
 //			Object[] options = { "Kontinente erkennen", "Kontinente platzieren" };
 //			int n = JOptionPane.showOptionDialog(null, "Modus wählen...", "Kontinent Quiz Launcher",
@@ -185,7 +168,6 @@ public class Main {
 //				System.exit(0);
 //				break;
 //			}
-		}
 //		f = null;
 		// new Main();
 		// new KontinentLocation();

@@ -330,7 +330,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		int green = (clr & 0x0000ff00) >> 8;
 		int blue = clr & 0x000000ff;
 
-		System.out.println("RGB Color: " + p.x + "|" + p.y + " -> " + alpha + "-" + red + "-" + green + "-" + blue);
+//		System.out.println("RGB Color: " + p.x + "|" + p.y + " -> " + alpha + "-" + red + "-" + green + "-" + blue);
 		if (red != 0 || green != 0 || blue != 0)
 			return true;
 		else
@@ -368,6 +368,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 				return;
 			}
 			end = "Gewonnen!";
+			
 		}
 
 	}
@@ -380,38 +381,38 @@ public class KontinentLocation extends Canvas implements Runnable {
 		switch (name) {
 		case "australien":
 			point = new Point(1053, 391);
-			scale = 0.82f;
+			scale = 0.42f;
 			break;
 		case "südamerika":
 			point = new Point(316, 334);
-			scale = 1.10f;
+			scale = 0.56f;
 			break;
 		case "afrika":
 			point = new Point(595, 253);
-			scale = 1.02f;
+			scale = 0.56f;
 			break;
 		case "asien":
 			point = new Point(762, 57);
-			scale = 1.44f;
+			scale = 0.76f;
 			break;
 		case "nordamerika":
 			point = new Point(260, 16);
-			scale = 1.48f;
+			scale = 0.78f;
 			break;
 		case "antarktis":
 			point = new Point(421, 352);
-			scale = 2.36f;
+			scale = 1.26f;
 			break;
 		case "europa":
 			point = new Point(676, 68);
-			scale = 0.78f;
+			scale = 0.42f;
 			break;
 		default:
 			break;
 		}
 		Float sc = (s - scale);
-		System.out.println(
-				name + " - distance(+-20) " + Point.distance(p.x, p.y, point.x, point.y) + " diff scale(+-8): " + sc);
+		System.out.println(name + " - distance(+-20) " + Point.distance(p.x, p.y, point.x, point.y)
+				+ " - diff scale(+-0.08): " + sc);
 		if (Point.distance(p.x, p.y, point.x, point.y) < 20 && (s - scale < 0.08f && s - scale > -0.08f))
 			return true;
 		else
@@ -419,11 +420,10 @@ public class KontinentLocation extends Canvas implements Runnable {
 	}
 
 }
-
-//australien => 1053|391 - 0.8200002
-//südamerika => 316|334 - 1.0999999
-//afrika => 595|253 - 1.02
-//asien => 762|57 - 1.4399996
-//nordamerika => 260|16 - 1.4799995
-//antarktis => 421|352 - 2.3199987
-//europa => 666|68 - 0.7800002
+//nordamerika - 268|21 - 0.78017837
+//südamerika - 325|341 - 0.5601786
+//europa - 662|65 - 0.4201786
+//asien - 765|62 - 0.7601784
+//afrika - 598|251 - 0.5601786
+//australien - 1057|398 - 0.4201786
+//antarktis - 416|351 - 1.260178
