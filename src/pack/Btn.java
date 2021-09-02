@@ -3,7 +3,6 @@ package pack;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -13,6 +12,7 @@ public class Btn {
 	private String text;
 	private BufferedImage image;
 	private Rectangle rect;
+	private Rectangle oRect;
 	private String ID;
 
 	private BufferedImage rImage = null;
@@ -22,16 +22,24 @@ public class Btn {
 		this.text = text;
 		this.ID = ID;
 		this.rect = rect;
+		this.oRect = rect;
 	}
 
 	public Btn(BufferedImage image, String ID, Rectangle rect) {
 		this.image = image;
 		this.ID = ID;
 		this.rect = rect;
+		this.oRect = rect;
+
 	}
 
-	public void render(Graphics g) { // TODO int factor x / y
+	public void render(Graphics g, int w, int h, float scale) { // TODO int factor x / y
 		g.setColor(Color.LIGHT_GRAY);
+		rect = new Rectangle((int) (w - 250 * scale),
+				(int) (oRect.y * scale), (int) (oRect.width * scale),
+				(int) (oRect.height * scale));
+//		g.fillRect((int) (rect.x * scale), (int) (rect.y * scale), (int) (rect.width * scale),
+//				(int) (rect.height * scale));
 		g.fillRect(rect.x, rect.y, rect.width, rect.height);
 		g.setColor(Color.GRAY);
 		g.fillRect(rect.x + rect.width / 20, rect.y + rect.width / 20, rect.width - rect.width / 20 * 2,

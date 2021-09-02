@@ -75,16 +75,23 @@ public class KontinentLocation extends Canvas implements Runnable {
 		// frame.setCursor(Cursor.MOVE_CURSOR);
 //		frame.setCursor(Cursor.WAIT_CURSOR);
 //		frame.setCursor(Txtoptions.optionCursor);
-//		frame.setCursor(Txtoptions.optionCursor);
 		// Image customImage = iconload.loadImage("cursor2.png");
 		// Cursor customCursor =
 		// Toolkit.getDefaultToolkit().createCustomCursor(customImage, new Point(0, 0),
 		// "customCursor");
 		// frame.setCursor(customCursor);
-		frame.setSize(1280, 720);
+
+//		frame.setSize(1280, 720);
+		frame.setSize(1920, 1080);
+
+		btnList.add(new Btn("Rotate", "rotateBtn", new Rectangle(frame.getSize().width - 250, 25, 225, 200)));
+		btnList.add(new Btn("Check", "checkBtn", new Rectangle(frame.getSize().width - 250, 250, 225, 200)));
+//		frame.setSize(1920 / 2, 1080 / 2);
+
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+//		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
 //		frame.setResizable(true);
 //		frame.setUndecorated(true);
 		frame.setVisible(true);
@@ -101,22 +108,12 @@ public class KontinentLocation extends Canvas implements Runnable {
 		System.out.println(frame.getWidth() / 7);
 		int rec = frame.getWidth() / 7;
 		for (int i = 0; i < 7; i++) {
-//			System.out.println((frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f);
-//			kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f;
-//			kontinentList.get(i).image = scale(kontinentList.get(i).originalImage, frame.getWidth() / 7,
-//					frame.getWidth() / 7);
-//			kontinentList.get(i).image = scale(kontinentList.get(i).originalImage, frame.getWidth() / 7,
-//					frame.getWidth() / 7);
 			kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f;
-//			System.out.println((frame.getWidth() / 7f) + " - " + kontinentList.get(i).image.getWidth() * 1f);
-//			System.out.println("size: " + kontinentList.get(i).size);
 			kontinentList.get(i).rect = new Rectangle(w() / 7 * i, h() - rec, 10, 10);
 		}
 
-		btnList.add(new Btn("Rotate", "rotateBtn", new Rectangle(frame.getWidth() - 275, 25, 225, 200)));
-		btnList.add(new Btn("Check", "checkBtn", new Rectangle(frame.getWidth() - 275, 250, 225, 200)));
-
-//		selectedKontinent = kontinentList.getFirst();
+//		btnList.add(new Btn("Rotate", "rotateBtn", new Rectangle(frame.getWidth() - 275, 25, 225, 200)));
+//		btnList.add(new Btn("Check", "checkBtn", new Rectangle(frame.getWidth() - 275, 250, 225, 200)));
 
 	}
 
@@ -163,22 +160,88 @@ public class KontinentLocation extends Canvas implements Runnable {
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
 		long timer = System.currentTimeMillis();
-//		int frames = 0;
 		while (running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
 			lastTime = now;
 			while (delta >= 1) {
-				render();
-//				frames++;
+				render2d();
 				delta--;
 			}
 			if (System.currentTimeMillis() - timer > 1000) {
 				timer = System.currentTimeMillis();
-//				frames = 0;
 			}
 		}
 		stop();
+	}
+
+	private void render2d() {
+		BufferStrategy bs = this.getBufferStrategy();
+		if (bs == null) {
+			this.createBufferStrategy(3);
+			return;
+		}
+		Graphics g = bs.getDrawGraphics();
+
+		scale = w() / 1920f;
+		if (h() / 1080f < scale && h() / 1080f < 1)
+			scale = h() / 1080f;
+
+		System.out.println("scale: " + scale);
+
+		// hintergrund
+		g.setColor(Color.DARK_GRAY);
+		g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
+
+		// SideMenu
+		g.setColor(Color.GRAY.darker());
+		g.fillRect(w() - (int) (300 * scale), 0, (int) (300 * scale), h() - w() / 7);
+		g.setColor(Color.BLACK);
+		g.drawRect(w() - (int) (300 * scale), 0, (int) (300 * scale), h() - w() / 7);
+
+		for (Btn tempBtn : btnList)
+			tempBtn.render(g, getWidth(), getHeight(), scale);
+
+		// Weltkarte
+		g.setColor(new Color(0, 105, 153));
+		if (end != null)
+			g.drawImage(temp, 50, 20, (int) (1348 * scale), (int) (720 * scale), null);
+		g.drawImage(rand, 50, 20, (int) (1348 * scale), (int) (720 * scale), null);
+
+		// Kontinentauswahl
+		g.setColor(Color.GRAY);
+		g.fillRect(0, h() - w() / 7 - 10, frame.getWidth(), w() / 7);
+		g.setColor(Color.BLACK);
+		int rec = frame.getWidth() / 7;
+		for (int i = 0; i < 7; i++) {
+//			g.drawRect(w() / 7 * i, h() - rec, w() / 7, rec);
+//			g.drawImage(kontinentList.get(i).image, w() / 7 * i, h() - rec, w() / 7, rec, null);
+			kontinentList.get(i).moveInObjectScreen(new Rectangle(0, 0, w(), h()));
+			kontinentList.get(i).render(g, w() / 7 * i, h() - rec, w() / 7, rec);
+
+		}
+		if (selectedKontinent != null)
+			selectedKontinent.render(g, w() / 7, h() - rec, w() / 7, rec);
+
+		PointerInfo a = MouseInfo.getPointerInfo();
+		Point b = a.getLocation();
+//		 + 16 * 2, + 24 * 2 + 15
+		int mx = (int) b.getX();// + Game.frame.getLocationOnScreen().x;
+		int my = (int) b.getY();// + Game.frame.getLocationOnScreen().y;
+
+		if (selectedKontinent != null) {
+			selectedKontinent.mouse(mx, my - 23);
+			// selectedKontinent.p = new Point(mx, my);
+			// selectedKontinent.render(g, mx, my, 300, 300);
+
+		}
+		if (end != null) {
+			g.setColor(Color.RED);
+			g.drawString(end, 20, 20);
+		}
+
+		g.dispose();
+		bs.show();
 	}
 
 	private void render() {
@@ -212,7 +275,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		// g.fillRect(frame.getWidth() - 250, 50, 200, 200);
 
 		for (Btn tempBtn : btnList)
-			tempBtn.render(g);
+			tempBtn.render(g, w(), h(), scale);
 
 //		for (Btn tempBtn : btnList) {
 //			tempBtn.renderBtn(g, scale);
@@ -358,6 +421,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 	}
 
 	private int w() {
+		if (frame.getExtendedState() != 0)
+			return (int) (frame.getWidth());
 		return (int) (frame.getWidth() - 16 * scale);
 	}
 
@@ -368,7 +433,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 				return;
 			}
 			end = "Gewonnen!";
-			
+
 		}
 
 	}
@@ -377,43 +442,46 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 	private boolean getSolution(String name, Point p, float s) { // kontinent
 		Point point = new Point(0, 0);
-		Float scale = 0.0f;
-		switch (name) {
+		Float cScale = 0.0f;
+		switch (name) { // *1,047559
 		case "australien":
 			point = new Point(1053, 391);
-			scale = 0.42f;
+			cScale = 0.42f;
 			break;
 		case "südamerika":
 			point = new Point(316, 334);
-			scale = 0.56f;
+			cScale = 0.56f;
 			break;
 		case "afrika":
 			point = new Point(595, 253);
-			scale = 0.56f;
+			cScale = 0.56f;
 			break;
 		case "asien":
 			point = new Point(762, 57);
-			scale = 0.76f;
+			cScale = 0.76f;
 			break;
 		case "nordamerika":
 			point = new Point(260, 16);
-			scale = 0.78f;
+			cScale = 0.78f;
 			break;
 		case "antarktis":
 			point = new Point(421, 352);
-			scale = 1.26f;
+			cScale = 1.26f;
 			break;
 		case "europa":
 			point = new Point(676, 68);
-			scale = 0.42f;
+			cScale = 0.42f;
 			break;
 		default:
 			break;
 		}
-		Float sc = (s - scale);
+		Float sc = (s * 1048 / 1000 - cScale);
 		System.out.println(name + " - distance(+-20) " + Point.distance(p.x, p.y, point.x, point.y)
 				+ " - diff scale(+-0.08): " + sc);
-		if (Point.distance(p.x, p.y, point.x, point.y) < 20 && (s - scale < 0.08f && s - scale > -0.08f))
+		System.out.println(name + " - " + p.x + " -> " + point.x + " || " + p.y + " -> " + point.y + " || " + " - " + s
+				+ " " + s * 1048 / 1000 + " -> " + cScale);
+		if (Point.distance(p.x * scale, p.y * scale, point.x, point.y) < 20
+				&& (s - cScale < 0.08f && s - cScale > -0.08f))
 			return true;
 		else
 			return false;
