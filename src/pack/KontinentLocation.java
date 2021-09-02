@@ -30,6 +30,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	public LinkedList<Btn> btnList;
 	public LinkedList<Kontinent> kontinentList;
 	private BufferedImage rand;
+	private float scale = 1f;
 
 	private Kontinent selectedKontinent = null;
 
@@ -80,7 +81,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		// Toolkit.getDefaultToolkit().createCustomCursor(customImage, new Point(0, 0),
 		// "customCursor");
 		// frame.setCursor(customCursor);
-		frame.setSize(1920 / 2, 1080 / 2);
+		frame.setSize(1280, 720);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -109,7 +110,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 			kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f;
 //			System.out.println((frame.getWidth() / 7f) + " - " + kontinentList.get(i).image.getWidth() * 1f);
 //			System.out.println("size: " + kontinentList.get(i).size);
-			kontinentList.get(i).p = new Point(w() / 7 * i, h() - rec);
+			kontinentList.get(i).rect = new Rectangle(w() / 7 * i, h() - rec, 10, 10);
 		}
 
 		btnList.add(new Btn("Rotate", "rotateBtn", new Rectangle(frame.getWidth() - 275, 25, 225, 200)));
@@ -187,29 +188,24 @@ public class KontinentLocation extends Canvas implements Runnable {
 			return;
 		}
 		Graphics g = bs.getDrawGraphics();
+
+		scale = w() / 1920f;
+		if (h() / 1080f < scale && h() / 1080f >= 1)
+			scale = 1080f / h();
+
 		// hintergrund
 		g.setColor(Color.GRAY);
 		g.setColor(Color.DARK_GRAY);
 		g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
 		g.setColor(Color.GRAY);
 
-		// Kontinentauswahl
-		g.setColor(Color.GRAY);
-		g.fillRect(0, h() - w() / 7, frame.getWidth(), w() / 7);
-		g.setColor(Color.BLACK);
-		int rec = frame.getWidth() / 7;
-		for (int i = 0; i < 7; i++) {
-//			g.drawRect(w() / 7 * i, h() - rec, w() / 7, rec);
-//			g.drawImage(kontinentList.get(i).image, w() / 7 * i, h() - rec, w() / 7, rec, null);
-			kontinentList.get(i).render(g, w() / 7 * i, h() - rec, w() / 7, rec); // Box
-
-		}
-
 		// SideMenu
 		g.setColor(Color.GRAY.darker());
-		g.fillRect(frame.getWidth() - 300, 0, 300, frame.getHeight() - 300);
+		g.fillRect(frame.getWidth() - (int) (300 * scale), 0, (int) (300 * scale),
+				frame.getHeight() - (int) (300 * scale));
 		g.setColor(Color.BLACK);
-		g.drawRect(frame.getWidth() - 300, 0, 300, frame.getHeight() - 300);
+		g.drawRect(frame.getWidth() - (int) (300 * scale), 0, (int) (300 * scale),
+				frame.getHeight() - (int) (300 * scale));
 		// g.drawRect(frame.getWidth() - 300, 300, 300, frame.getHeight() - 300);
 		// g.drawRect(frame.getWidth() - 300, 600, 300, frame.getHeight() - 300);
 		// rotate Btn
@@ -217,6 +213,10 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 		for (Btn tempBtn : btnList)
 			tempBtn.render(g);
+
+//		for (Btn tempBtn : btnList) {
+//			tempBtn.renderBtn(g, scale);
+//		}
 //TODO: render BTN
 
 		// check btn!
@@ -229,9 +229,17 @@ public class KontinentLocation extends Canvas implements Runnable {
 			g.drawImage(temp, 50, 20, 1124 * s / 10, 600 * s / 10, null);
 		g.drawImage(rand, 50, 20, 1124 * s / 10, 600 * s / 10, null);
 
-//temp	
+		// Kontinentauswahl
+		g.setColor(Color.GRAY);
+		g.fillRect(0, h() - w() / 7, frame.getWidth(), w() / 7);
+		g.setColor(Color.BLACK);
+		int rec = frame.getWidth() / 7;
 		for (int i = 0; i < 7; i++) {
+//			g.drawRect(w() / 7 * i, h() - rec, w() / 7, rec);
+//			g.drawImage(kontinentList.get(i).image, w() / 7 * i, h() - rec, w() / 7, rec, null);
+			kontinentList.get(i).moveInObjectScreen(new Rectangle(0, 0, w(), h()));
 			kontinentList.get(i).render(g, w() / 7 * i, h() - rec, w() / 7, rec);
+
 		}
 		if (selectedKontinent != null)
 			selectedKontinent.render(g, w() / 7, h() - rec, w() / 7, rec);
@@ -286,7 +294,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		case "checkBtn":
 			if (selectedKontinent == null) {
 				for (Kontinent k : kontinentList) {
-					System.out.println(k.name + " => " + k.p.x + "|" + k.p.y + " - " + k.size);
+					System.out.println(k.name + " => " + k.rect.x + "|" + k.rect.y + " - " + k.size);
 				}
 				checkAnswere();
 			}
@@ -301,7 +309,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	public void checkKontinentBox(Point p) {
 		if (selectedKontinent == null) {
 			for (Kontinent k : kontinentList) {
-				if (k.boxIsTouched(p.x, p.y) && getPixelInImage(new Point(p.x - k.p.x, p.y - k.p.y), k.image)) {
+				if (k.boxIsTouched(p.x, p.y) && getPixelInImage(new Point(p.x - k.rect.x, p.y - k.rect.y), k.image)) {
 					// && getPixelInImage(new Point(p.x - k.p.x, p.y - k.p.y), k.image)
 					selectedKontinent = k;
 					k.select(p.x, p.y);
@@ -310,7 +318,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 			}
 		} else {
 			Kontinent k = selectedKontinent;
-			System.out.println(k.name + " - " + k.p.x + "|" + k.p.y + " - " + k.size);
+			System.out.println(k.name + " - " + k.rect.x + "|" + k.rect.y + " - " + k.size);
 			selectedKontinent = null;
 		}
 	}
@@ -329,12 +337,12 @@ public class KontinentLocation extends Canvas implements Runnable {
 			return false;
 	}
 
-	private Color getColorAt(Point p) {
-		Rectangle rect = frame.getContentPane().getBounds();
-		BufferedImage img = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-		frame.getContentPane().paintAll(img.createGraphics());
-		return new Color(img.getRGB(p.x, p.y), true);
-	}
+//	private Color getColorAt(Point p) {
+//		Rectangle rect = frame.getContentPane().getBounds();
+//		BufferedImage img = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+//		frame.getContentPane().paintAll(img.createGraphics());
+//		return new Color(img.getRGB(p.x, p.y), true);
+//	}
 
 	public void scroll(int amount) {
 		if (selectedKontinent != null) {
@@ -346,16 +354,16 @@ public class KontinentLocation extends Canvas implements Runnable {
 	}
 
 	private int h() {
-		return frame.getHeight() - 25;
+		return (int) (frame.getHeight() - 25 * scale); // 25p = taskbar
 	}
 
 	private int w() {
-		return frame.getWidth();
+		return (int) (frame.getWidth() - 16 * scale);
 	}
 
 	private void checkAnswere() {
 		for (Kontinent k : kontinentList) {
-			if (getSolution(k.name, k.p, k.size) == false) {
+			if (getSolution(k.name, new Point(k.rect.x, k.rect.y), k.size) == false) {
 				end = "Verloren! ->" + k.name;
 				return;
 			}

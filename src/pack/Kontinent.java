@@ -1,6 +1,5 @@
 package pack;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -11,9 +10,9 @@ public class Kontinent {
 
 	String name; // TODO private
 	BufferedImage image, originalImage;
-	private Rectangle box;
+	public Rectangle rect;
 	public float size = 1f; // scale
-	public Point p;
+//	public Point p; // TODO replace by rect
 	private int dx = 0, dy = 0;
 
 	public Kontinent(String name, BufferedImage image) {
@@ -23,13 +22,13 @@ public class Kontinent {
 	}
 
 	public void select(int x, int y) {
-		dx = x - p.x;
-		dy = y - p.y;
+		dx = x - rect.x;
+		dy = y - rect.y;
 	}
 
 	public void mouse(int x, int y) {
-		p.x = x - dx;
-		p.y = y - dy;
+		rect.x = x - dx;
+		rect.y = y - dy;
 	}
 
 	public static BufferedImage scale(BufferedImage imageToScale, int dWidth, int dHeight) {
@@ -47,11 +46,11 @@ public class Kontinent {
 		image = scale(originalImage, (int) (originalImage.getWidth() * size), (int) (originalImage.getHeight() * size));
 // TODO scale - originalImage.width...
 
-		box = new Rectangle(p.x, p.y, (int) (image.getWidth()), (int) (image.getHeight()));
+		rect = new Rectangle(rect.x, rect.y, (int) (image.getWidth()), (int) (image.getHeight()));
 
 //		g.setColor(Color.RED);
 //		g.drawRect(p.x, p.y, (int) (box.width), (int) (box.height));
-		g.drawImage(image, p.x, p.y, image.getWidth(), image.getHeight(), null);
+		g.drawImage(image, rect.x, rect.y, image.getWidth(), image.getHeight(), null);
 
 		// Debug
 //		g.setColor(Color.BLUE);
@@ -84,9 +83,25 @@ public class Kontinent {
 //	}
 
 	public boolean boxIsTouched(int x, int y) {
-		if (x > box.x && x < box.x + box.width && y > box.y && y < box.y + box.height)
+		if (x > rect.x && x < rect.x + rect.width && y > rect.y && y < rect.y + rect.height)
 			return true;
 		return false;
+	}
+
+	public void moveInObjectScreen(Rectangle rScreen) {
+		if (rect == null)
+			return;
+//		System.out.println(" rect Kontinent " + (rect.x + rect.width / 2));
+		if (rect.x + rect.width / 2 < rScreen.x)
+			rect.x -= rect.x + rect.width / 2;
+		if (rect.x + rect.width / 2 > rScreen.width)
+			rect.x += rScreen.width - rect.x - rect.width / 2;
+
+		if (rect.y + rect.height / 2 < rScreen.y)
+			rect.y -= rect.y + rect.height / 2;
+		if (rect.y + rect.height / 2 > rScreen.height)
+			rect.y += rScreen.height - rect.y - rect.height / 2;
+
 	}
 
 }
