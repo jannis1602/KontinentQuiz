@@ -47,6 +47,8 @@ public class Main {
 	private BufferedImageLoader imgLoader;
 	private int richtig = 0;
 	private int falsch = 0;
+	private static String serverReleaseVersion;
+	private static String updateUrl = null;
 
 	static JFrame modiFrame;
 
@@ -65,8 +67,7 @@ public class Main {
 			}
 		}
 
-		String serverReleaseVersion = getLastReleaseVersion(
-				"https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
+		getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
 
 		int v = Integer.parseInt(version.replaceAll("[^0-9]", ""));
 		int rv = Integer.parseInt(serverReleaseVersion.replaceAll("[^0-9]", ""));
@@ -124,6 +125,7 @@ public class Main {
 		panel.add(jb2);
 		panel.add(jb3);
 		modiFrame.add(panel);
+		modiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		modiFrame.setVisible(true);
 		modiFrame.pack();
 		modiFrame.setLocationRelativeTo(null);
@@ -139,13 +141,14 @@ public class Main {
 				System.out.println("Server versionTag: " + serverReleaseVersion);
 
 				try {
-					InputStream in = new URL("https://github.com/jannis1602/KontinentQuiz/releases/download/v."
-							+ serverReleaseVersion + "/KontinentQuiz.jar").openStream();
+					System.out.println(updateUrl);
+					InputStream in = new URL(updateUrl).openStream();
 					Files.copy(in,
-							Paths.get(getJarExecutionDirectory() + "\\KontinentQuiz-" + serverReleaseVersion + ".jar"),
-							StandardCopyOption.REPLACE_EXISTING);
-					Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory() + "\\KontinentQuiz-"
-							+ serverReleaseVersion + ".jar " + filePath);
+							Paths.get(
+									getJarExecutionDirectory() + updateUrl.split("/")[updateUrl.split("/").length - 1]),
+							StandardCopyOption.REPLACE_EXISTING);// "\\KontinentQuiz-" + serverReleaseVersion + ".jar"),
+					Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory()
+							+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " " + filePath);
 					Thread.sleep(200);
 					System.exit(0);
 				} catch (Exception e1) {
@@ -153,64 +156,50 @@ public class Main {
 				}
 			}
 		}
+	}
 
-//			Object[] options = { "Kontinente erkennen", "Kontinente platzieren" };
-//			int n = JOptionPane.showOptionDialog(null, "Modus wählen...", "Kontinent Quiz Launcher",
-//					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-//			switch (n) {
-//			case 0:
-//				new Main();
-//				break;
-//			case 1:
-//				new KontinentLocation();
-//				break;
-//			default:
-//				System.exit(0);
-//				break;
+	public static void getLastReleaseVersion(String webseite) {
+		try {
+			URL url = new URL(webseite);
+			Scanner scanner = new Scanner(url.openStream());
+			String s = null;
+			while (scanner.hasNext()) {
+				s = scanner.nextLine();
+				if (s.contains("html_url") && serverReleaseVersion == null)
+					serverReleaseVersion = s.split("/tag/v.")[1].split("\",")[0];
+				if (s.contains("browser_download_url") && updateUrl == null) {
+					updateUrl = "https" + s.split("browser_download_url\":\"https")[1].split("jar")[0] + "jar";
+				}
+				if (serverReleaseVersion != null && updateUrl != null) {
+					System.out.println("updateUrl: " + updateUrl);
+					scanner.close();
+					return;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+//	public static String getReleaseVersion(String webseite) {
+//		String releaseVersion = null;
+//		try {
+//			URL url = new URL(webseite);
+//			Scanner scanner = new Scanner(url.openStream());
+//			String s = null;
+//			while (scanner.hasNext()) {
+//				s = scanner.next();
+//				if (s.contains("/jannis1602/KontinentQuiz/releases/tag/")) {
+//					System.out.println(s);
+//					releaseVersion = s.split("/jannis1602/KontinentQuiz/releases/tag/v.")[1].split("\">")[0];
+//					break;
+//				}
 //			}
-//		f = null;
-		// new Main();
-		// new KontinentLocation();
-	}
-
-	public static String getLastReleaseVersion(String webseite) {
-		String releaseVersion = null;
-		try {
-			URL url = new URL(webseite);
-			Scanner scanner = new Scanner(url.openStream());
-			String s = null;
-			while (scanner.hasNext()) {
-				s = scanner.next();
-				if (s.contains("html_url")) {
-					releaseVersion = s.split("/tag/v.")[1].split("\",")[0];
-					break;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return releaseVersion;
-	}
-
-	public static String getReleaseVersion(String webseite) {
-		String releaseVersion = null;
-		try {
-			URL url = new URL(webseite);
-			Scanner scanner = new Scanner(url.openStream());
-			String s = null;
-			while (scanner.hasNext()) {
-				s = scanner.next();
-				if (s.contains("/jannis1602/KontinentQuiz/releases/tag/")) {
-					System.out.println(s);
-					releaseVersion = s.split("/jannis1602/KontinentQuiz/releases/tag/v.")[1].split("\">")[0];
-					break;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return releaseVersion;
-	}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return releaseVersion;
+//	}
 
 	public static String getJarExecutionDirectory() {
 		String jarFile = null;
