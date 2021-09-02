@@ -35,8 +35,7 @@ public class Btn {
 
 	public void render(Graphics g, int w, int h, float scale) { // TODO int factor x / y
 		g.setColor(Color.LIGHT_GRAY);
-		rect = new Rectangle((int) (w - 250 * scale),
-				(int) (oRect.y * scale), (int) (oRect.width * scale),
+		rect = new Rectangle((int) (w - 250 * scale), (int) (oRect.y * scale), (int) (oRect.width * scale),
 				(int) (oRect.height * scale));
 //		g.fillRect((int) (rect.x * scale), (int) (rect.y * scale), (int) (rect.width * scale),
 //				(int) (rect.height * scale));
@@ -47,7 +46,7 @@ public class Btn {
 		if (text != null) {
 			g.setColor(Color.BLACK);
 			g.setFont(new Font("ROBOTO", Font.PLAIN, 20));
-			g.drawString(text, rect.x + rect.width / 10 + 40, rect.y + rect.height / 2);
+			g.drawString(text, rect.x + rect.width / 10 + (int)(40 * scale), rect.y + rect.height / 2);
 		}
 	}
 

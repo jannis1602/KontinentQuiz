@@ -38,6 +38,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 	private String end = null;
 
+	public static Point mouseXY;
+
 	public KontinentLocation() {
 //		System.out.println(getPixelInImage(new Point(100, 100), new BufferedImageLoader().loadImage("afrika2.png")));
 //		System.out.println(new BufferedImageLoader().loadImage("afrika2.png").getColorModel().hasAlpha() + " - "
@@ -187,7 +189,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		if (h() / 1080f < scale && h() / 1080f < 1)
 			scale = h() / 1080f;
 
-		System.out.println("scale: " + scale);
+//		System.out.println("scale: " + scale);
 
 		// hintergrund
 		g.setColor(Color.DARK_GRAY);
@@ -223,14 +225,14 @@ public class KontinentLocation extends Canvas implements Runnable {
 		if (selectedKontinent != null)
 			selectedKontinent.render(g, w() / 7, h() - rec, w() / 7, rec);
 
-		PointerInfo a = MouseInfo.getPointerInfo();
-		Point b = a.getLocation();
-//		 + 16 * 2, + 24 * 2 + 15
+//		PointerInfo a = MouseInfo.getPointerInfo();
+//		Point b = a.getLocation();
+		Point b = mouseXY;
 		int mx = (int) b.getX();// + Game.frame.getLocationOnScreen().x;
 		int my = (int) b.getY();// + Game.frame.getLocationOnScreen().y;
 
 		if (selectedKontinent != null) {
-			selectedKontinent.mouse(mx, my - 23);
+			selectedKontinent.mouse(mx, my); // - 23
 			// selectedKontinent.p = new Point(mx, my);
 			// selectedKontinent.render(g, mx, my, 300, 300);
 
@@ -475,13 +477,14 @@ public class KontinentLocation extends Canvas implements Runnable {
 		default:
 			break;
 		}
-		Float sc = (s * 1048 / 1000 - cScale);
-		System.out.println(name + " - distance(+-20) " + Point.distance(p.x, p.y, point.x, point.y)
-				+ " - diff scale(+-0.08): " + sc);
-		System.out.println(name + " - " + p.x + " -> " + point.x + " || " + p.y + " -> " + point.y + " || " + " - " + s
-				+ " " + s * 1048 / 1000 + " -> " + cScale);
-		if (Point.distance(p.x * scale, p.y * scale, point.x, point.y) < 20
-				&& (s - cScale < 0.08f && s - cScale > -0.08f))
+		Float sc = (s - cScale * scale);
+		System.out.println(name + " - distance(+-40) " + Point.distance(p.x, p.y, point.x * scale, point.y * scale)
+				+ " - diff. scale(+-0.08): " + sc);
+		System.out.println(name + " - " + p.x + " -> " + point.x * scale + " || " + p.y + " -> " + point.y * scale
+				+ " || " + s + " -> " + cScale * scale);
+		if (Point.distance(p.x, p.y, point.x * scale, point.y * scale) < 40 // 20
+				&& (sc < 0.08f && sc > -0.08f))
+
 			return true;
 		else
 			return false;

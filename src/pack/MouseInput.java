@@ -26,7 +26,7 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-
+		KontinentLocation.mouseXY = e.getPoint();
 	}
 
 	@Override
