@@ -22,6 +22,8 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 //		x = e.getX();
 //		y = e.getY();
 //		System.out.println("Dragged; " + x + " - " + y);
+		KontinentLocation.mouseXY = e.getPoint();
+
 	}
 
 	@Override
@@ -55,13 +57,13 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 				return;
 			}
 		}
-		kontinentLocation.checkKontinentBox(new Point(x, y));
+		kontinentLocation.checkKontinentBox(new Point(x, y), true);
 
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-
+		kontinentLocation.checkKontinentBox(new Point(x, y), false);
 	}
 
 	@Override

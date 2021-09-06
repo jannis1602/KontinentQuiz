@@ -33,12 +33,13 @@ public class KontinentLocation extends Canvas implements Runnable {
 	private float scale = 1f;
 
 	private Kontinent selectedKontinent = null;
+	private boolean draggingKontinent = false;
 
 	private BufferedImage temp;
 
 	private String end = null;
 
-	public static Point mouseXY;
+	public static Point mouseXY = new Point(0, 0);
 
 	public KontinentLocation() {
 //		System.out.println(getPixelInImage(new Point(100, 100), new BufferedImageLoader().loadImage("afrika2.png")));
@@ -225,16 +226,20 @@ public class KontinentLocation extends Canvas implements Runnable {
 			kontinentList.get(i).render(g, w() / 7 * i, h() - rec, w() / 7, rec);
 
 		}
-		if (selectedKontinent != null)
+		if (selectedKontinent != null) {
 			selectedKontinent.render(g, w() / 7, h() - rec, w() / 7, rec);
+			g.setColor(Color.BLUE);
+			g.drawRect(selectedKontinent.rect.x, selectedKontinent.rect.y, selectedKontinent.rect.width,
+					selectedKontinent.rect.height);
+		}
 
 //		PointerInfo a = MouseInfo.getPointerInfo();
 //		Point b = a.getLocation();
-		Point b = mouseXY;
-		int mx = (int) b.getX();// + Game.frame.getLocationOnScreen().x;
-		int my = (int) b.getY();// + Game.frame.getLocationOnScreen().y;
+		if (selectedKontinent != null && draggingKontinent) {
+			Point b = mouseXY;
+			int mx = (int) b.getX();// + Game.frame.getLocationOnScreen().x;
+			int my = (int) b.getY();// + Game.frame.getLocationOnScreen().y;
 
-		if (selectedKontinent != null) {
 			selectedKontinent.mouse(mx, my); // - 23
 			// selectedKontinent.p = new Point(mx, my);
 			// selectedKontinent.render(g, mx, my, 300, 300);
@@ -317,7 +322,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		int mx = (int) b.getX();// + Game.frame.getLocationOnScreen().x;
 		int my = (int) b.getY();// + Game.frame.getLocationOnScreen().y;
 
-		if (selectedKontinent != null) {
+		if (selectedKontinent != null && draggingKontinent) {
 			selectedKontinent.mouse(mx, my - 23);
 			// selectedKontinent.p = new Point(mx, my);
 			// selectedKontinent.render(g, mx, my, 300, 300);
@@ -352,7 +357,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	}
 
 	public void triggerBtn(String id) {
-//		System.out.println("btnTrigger: " + id);
+//		System.out.println(id);
 		switch (id) {
 		case "rotateBtnL":
 			if (selectedKontinent != null)
@@ -371,7 +376,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 				scroll(-3);
 			break;
 		case "checkBtn":
-			if (selectedKontinent == null) {
+			if (!draggingKontinent) {// if (selectedKontinent == null) {
 				for (Kontinent k : kontinentList) {
 					System.out.println(k.name + " => " + k.rect.x + "|" + k.rect.y + " - " + k.size);
 				}
@@ -385,20 +390,32 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 	}
 
-	public void checkKontinentBox(Point p) {
-		if (selectedKontinent == null) {
+	public void checkKontinentBox(Point p, boolean selectMode) {
+		if (selectMode) {
 			for (Kontinent k : kontinentList) {
 				if (k.boxIsTouched(p.x, p.y) && getPixelInImage(new Point(p.x - k.rect.x, p.y - k.rect.y), k.image)) {
 					// && getPixelInImage(new Point(p.x - k.p.x, p.y - k.p.y), k.image)
+					// TODO if selected == touched => null
+//					if (selectedKontinent != null) {
+//						System.out.println(k.name + " - " + selectedKontinent.name);
+//						if (k.name.contains(selectedKontinent.name)) {
+//							selectedKontinent = null;
+//							System.out.println(k.name + " - " + k.rect.x + "|" + k.rect.y + " - " + k.size);
+//							draggingKontinent = false;
+//							return;
+//						}
+//					}
 					selectedKontinent = k;
 					k.select(p.x, p.y);
 					end = null;
+					draggingKontinent = true;
 				}
 			}
-		} else {
+		} else if (draggingKontinent) {
 			Kontinent k = selectedKontinent;
 			System.out.println(k.name + " - " + k.rect.x + "|" + k.rect.y + " - " + k.size);
-			selectedKontinent = null;
+//			selectedKontinent = null;
+			draggingKontinent = false;
 		}
 	}
 
