@@ -377,6 +377,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 			break;
 		case "checkBtn":
 			if (!draggingKontinent) {// if (selectedKontinent == null) {
+				selectedKontinent = null;
 				for (Kontinent k : kontinentList) {
 					System.out.println(k.name + " => " + k.rect.x + "|" + k.rect.y + " - " + k.size);
 				}
