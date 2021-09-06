@@ -1,6 +1,7 @@
 package pack;
 
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -17,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -67,19 +69,7 @@ public class Main {
 			}
 		}
 
-		getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
-
-		int v = Integer.parseInt(version.replaceAll("[^0-9]", ""));
-		int rv = Integer.parseInt(serverReleaseVersion.replaceAll("[^0-9]", ""));
-		System.out.println("check for updates " + v + " -> " + rv);
-
-		File filePath = null;
-		try {
-			filePath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-			System.out.println("FilePath: " + filePath);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+// Launcher
 
 		modiFrame = new JFrame("Kontinent Quiz Launcher");
 		JButton jb1 = new JButton("Kontinente erkennen");
@@ -131,28 +121,41 @@ public class Main {
 		modiFrame.setLocationRelativeTo(null);
 
 // request update			
-		if (v < rv) {
-			int option = JOptionPane.showConfirmDialog(modiFrame,
-					"Update to v." + serverReleaseVersion.replaceAll("[^0-9.]", ""), "Update?",
-					JOptionPane.YES_NO_OPTION);
-			System.out.println(option);
-			if (option == 0) {
+		if (true) {
+			getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
 
-				System.out.println("Server versionTag: " + serverReleaseVersion);
+			int v = Integer.parseInt(version.replaceAll("[^0-9]", ""));
+			int rv = Integer.parseInt(serverReleaseVersion.replaceAll("[^0-9]", ""));
+			System.out.println("check for updates " + v + " -> " + rv);
 
-				try {
-					System.out.println(updateUrl);
-					InputStream in = new URL(updateUrl).openStream();
-					Files.copy(in,
-							Paths.get(
-									getJarExecutionDirectory() + updateUrl.split("/")[updateUrl.split("/").length - 1]),
-							StandardCopyOption.REPLACE_EXISTING);// "\\KontinentQuiz-" + serverReleaseVersion + ".jar"),
-					Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory()
-							+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " " + filePath);
-					Thread.sleep(200);
-					System.exit(0);
-				} catch (Exception e1) {
-					e1.printStackTrace();
+			File filePath = null;
+			try {
+				filePath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+				System.out.println("FilePath: " + filePath);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+			if (v < rv) {
+				int option = JOptionPane.showConfirmDialog(modiFrame,
+						"Update to v." + serverReleaseVersion.replaceAll("[^0-9.]", ""), "Update?",
+						JOptionPane.YES_NO_OPTION);
+				System.out.println(option);
+				if (option == 0) {
+					System.out.println("Server versionTag: " + serverReleaseVersion);
+					try {
+						System.out.println(updateUrl);
+						InputStream in = new URL(updateUrl).openStream();
+						Files.copy(in,
+								Paths.get(getJarExecutionDirectory()
+										+ updateUrl.split("/")[updateUrl.split("/").length - 1]),
+								StandardCopyOption.REPLACE_EXISTING);
+						Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory()
+								+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " " + filePath);
+						Thread.sleep(200);
+						System.exit(0);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		}
@@ -178,28 +181,15 @@ public class Main {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(modiFrame, "Konnte nicht auf Updates prüfen.\n Aktuelle Version: " + version);
+			Desktop desktop = java.awt.Desktop.getDesktop();
+			try {
+				URI uri = new URI("https://github.com/jannis1602/KontinentQuiz/releases/latest");
+				desktop.browse(uri);
+			} catch (Exception e2) {
+			}
 		}
 	}
-
-//	public static String getReleaseVersion(String webseite) {
-//		String releaseVersion = null;
-//		try {
-//			URL url = new URL(webseite);
-//			Scanner scanner = new Scanner(url.openStream());
-//			String s = null;
-//			while (scanner.hasNext()) {
-//				s = scanner.next();
-//				if (s.contains("/jannis1602/KontinentQuiz/releases/tag/")) {
-//					System.out.println(s);
-//					releaseVersion = s.split("/jannis1602/KontinentQuiz/releases/tag/v.")[1].split("\">")[0];
-//					break;
-//				}
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		return releaseVersion;
-//	}
 
 	public static String getJarExecutionDirectory() {
 		String jarFile = null;
@@ -217,7 +207,7 @@ public class Main {
 	public Main() {
 		imgLoader = new BufferedImageLoader();
 		JFrame frame = new JFrame("Kontinent Quiz");
-		frame.setSize(800, 450);
+		frame.setSize(1920, 1080);
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -244,7 +234,6 @@ public class Main {
 		panel.add(labelFalsch, c01);
 
 		labelImg = new JLabel(new ImageIcon(img), JLabel.CENTER);
-//		labelImg.setBackground(Color.DARK_GRAY);
 
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.fill = GridBagConstraints.BOTH;
@@ -325,7 +314,6 @@ public class Main {
 			kont = kontinente[r.nextInt(6)];
 		BufferedImage img = imgLoader.loadImage(kont + ".png");
 		kontinent = kont;
-
 		img = rotate(img, r.nextInt(11) * 90.0);
 		labelImg.setIcon(new ImageIcon(img));
 	}
@@ -348,13 +336,4 @@ public class Main {
 		g2d.dispose();
 		return rotate;
 	}
-
-	public static int getWidth() {
-		return 1;
-	}
-
-	public static int getHight() {
-		return 1;
-	}
-
 }

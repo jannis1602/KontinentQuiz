@@ -15,9 +15,7 @@ public class Btn {
 	private Rectangle oRect; // original rect
 	private String ID;
 
-//	private BufferedImage rImage = null;
-
-	// TODO: create image once -> render image
+// TODO: create image once -> render image
 	public Btn(String text, String ID, Rectangle rect) {
 		this.text = text;
 		this.ID = ID;
@@ -33,14 +31,10 @@ public class Btn {
 
 	}
 
-	public void render(Graphics g, int w, int h, float scale) { // TODO int factor x / y
+	public void render(Graphics g, int w, int h, float scale) {
 		g.setColor(Color.LIGHT_GRAY);
 		rect = new Rectangle((int) (w - oRect.x * scale), (int) (oRect.y * scale), (int) (oRect.width * scale),
 				(int) (oRect.height * scale));
-//		rect = new Rectangle((int) (w - 250 * scale), (int) (oRect.y * scale), (int) (oRect.width * scale),
-//				(int) (oRect.height * scale));
-//		g.fillRect((int) (rect.x * scale), (int) (rect.y * scale), (int) (rect.width * scale),
-//				(int) (rect.height * scale));
 		g.fillRect(rect.x, rect.y, rect.width, rect.height);
 		g.setColor(Color.GRAY);
 		g.fillRect(rect.x + rect.width / 20, rect.y + rect.width / 20, rect.width - rect.width / 20 * 2,
@@ -54,41 +48,7 @@ public class Btn {
 			g.setFont(new Font("ROBOTO", Font.PLAIN, 20));
 			g.drawString(text, rect.x + rect.width / 10 + (int) (30 * scale), rect.y + rect.height / 2);
 		}
-
 	}
-
-//	public BufferedImage renderImage(boolean renderNew) {
-//		if (!renderNew && rImage != null)
-//			return rImage;
-//		int width = 1280;
-//		int height = 720; // -> 720p
-//		BufferedImage bImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-//		Graphics2D g2d = bImage.createGraphics();
-//
-//		g2d.setColor(Color.LIGHT_GRAY);
-//		g2d.fillRect(rect.x, rect.y, rect.width, rect.height);
-////		g2d.setColor(Color.GRAY);
-////		g2d.fillRect(rect.x + rect.width / 20, rect.y + rect.width / 20, rect.width - rect.width / 20 * 2,
-////				rect.height - rect.width / 20 * 2);
-////		if (text != null) {
-////			g2d.setColor(Color.BLACK);
-////			g2d.setFont(new Font("ROBOTO", Font.PLAIN, 20));
-////			g2d.drawString(text, rect.x + rect.width / 10 + 40, rect.y + rect.height / 2);
-////		}
-//
-//		g2d.dispose();
-//		rImage = bImage;
-//		return bImage;
-//	}
-//
-//	public void renderBtn(Graphics g, Float scale) {
-////		System.out.println("BtnScale: " + scale);
-////		System.out.println((int) (rect.x * scale) + " - " + (int) (rect.y * scale) + " - " + (int) (rect.width * scale)
-////				+ " - " + (int) (rect.height * scale));
-//		g.drawImage(renderImage(false), (int) (rect.x * scale), (int) (rect.y * scale), (int) (rect.width * scale),
-//				(int) (rect.height * scale), null);
-//
-//	}
 
 	public String checkBox(Point p) {
 		if (p.x > rect.x && p.x < rect.x + rect.width && p.y > rect.y && p.y < rect.y + rect.height)
@@ -97,18 +57,5 @@ public class Btn {
 			return null;
 
 	}
-
-//	public void triggerEvent(String id) {
-//
-//		switch (id) {
-//		case "rotateBtn":
-//			
-//			break;
-//
-//		default:
-//			break;
-//		}
-//
-//	}
 
 }

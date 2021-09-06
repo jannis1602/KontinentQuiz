@@ -7,11 +7,10 @@ import java.awt.image.BufferedImage;
 
 public class Kontinent {
 
-	String name; // TODO private
-	BufferedImage image, originalImage;
+	public String name;
+	public BufferedImage image, originalImage;
 	public Rectangle rect;
 	public float size = 1f; // scale
-//	public Point p; // TODO replace by rect
 	public int dx = 0, dy = 0;
 	// start location...
 
@@ -45,13 +44,12 @@ public class Kontinent {
 	public void render(Graphics g, int x, int y, int w, int h) {
 		image = scaleImage(originalImage, (int) (originalImage.getWidth() * size),
 				(int) (originalImage.getHeight() * size));
-// TODO scale - originalImage.width...
 
 		rect = new Rectangle(rect.x, rect.y, (int) (image.getWidth()), (int) (image.getHeight()));
 
 		g.drawImage(image, rect.x, rect.y, image.getWidth(), image.getHeight(), null);
 
-		// Debug
+// DEBUG
 //		g.setColor(Color.BLUE);
 //		for (int yy = 0; yy < image.getHeight(); yy = yy + 10)
 //			for (int xx = 0; xx < image.getWidth(); xx = xx + 10) {
@@ -78,17 +76,14 @@ public class Kontinent {
 	public void moveInObjectScreen(Rectangle rScreen) {
 		if (rect == null)
 			return;
-//		System.out.println(" rect Kontinent " + (rect.x + rect.width / 2));
 		if (rect.x + rect.width / 2 < rScreen.x)
 			rect.x -= rect.x + rect.width / 2;
 		if (rect.x + rect.width / 2 > rScreen.width)
 			rect.x += rScreen.width - rect.x - rect.width / 2;
-
 		if (rect.y + rect.height / 2 < rScreen.y)
 			rect.y -= rect.y + rect.height / 2;
 		if (rect.y + rect.height / 2 > rScreen.height)
 			rect.y += rScreen.height - rect.y - rect.height / 2;
-
 	}
 
 }

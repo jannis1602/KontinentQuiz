@@ -19,11 +19,7 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-//		x = e.getX();
-//		y = e.getY();
-//		System.out.println("Dragged; " + x + " - " + y);
 		KontinentLocation.mouseXY = e.getPoint();
-
 	}
 
 	@Override
@@ -50,7 +46,6 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 	public void mousePressed(MouseEvent e) {
 		x = e.getX();
 		y = e.getY();
-//		System.out.println(x + " - " + y);
 		for (Btn tempBtn : kontinentLocation.btnList) {
 			if (tempBtn.checkBox(new Point(x, y)) != null) {
 				kontinentLocation.triggerBtn(tempBtn.checkBox(new Point(x, y)));
@@ -68,8 +63,6 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-//		System.out.println(e.getScrollAmount());
-//		System.out.println(e.getWheelRotation());
 		e.getX();
 		e.getY();
 		kontinentLocation.scroll(e.getScrollAmount() * e.getWheelRotation());
