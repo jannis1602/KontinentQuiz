@@ -130,7 +130,8 @@ public class Main {
 
 			File filePath = null;
 			try {
-				filePath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+				filePath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI() + "\\"
+						+ updateUrl.split("/")[updateUrl.split("/").length - 1]);
 				System.out.println("FilePath: " + filePath);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
@@ -149,8 +150,12 @@ public class Main {
 								Paths.get(getJarExecutionDirectory()
 										+ updateUrl.split("/")[updateUrl.split("/").length - 1]),
 								StandardCopyOption.REPLACE_EXISTING);
-						Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory()
-								+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " " + filePath);
+//						Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory()
+//								+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " " + filePath);
+						Runtime.getRuntime()
+								.exec("cmd /c start " + getJarExecutionDirectory()
+										+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " "
+										+ System.getProperty("java.class.path"));
 						Thread.sleep(200);
 						System.exit(0);
 					} catch (Exception e1) {
