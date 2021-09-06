@@ -40,7 +40,7 @@ import Image.BufferedImageLoader;
  */
 
 public class Main {
-	public static final String version = "0.1.4";
+	public static final String version = "0.1.5";
 	private JLabel labelImg;
 	private JTextField tf;
 	JLabel labelRichtig, labelFalsch;

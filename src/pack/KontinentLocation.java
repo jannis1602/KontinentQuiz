@@ -86,16 +86,23 @@ public class KontinentLocation extends Canvas implements Runnable {
 //		frame.setSize(1280, 720);
 		frame.setSize(1920, 1080);
 
-		btnList.add(new Btn("Rotate", "rotateBtn", new Rectangle(frame.getSize().width - 250, 25, 225, 200)));
-		btnList.add(new Btn("Check", "checkBtn", new Rectangle(frame.getSize().width - 250, 250, 225, 200)));
+		btnList.add(new Btn("Rotate L", "rotateBtnL", new Rectangle(400, 25, 175, 175)));
+		btnList.add(new Btn("Rotate R", "rotateBtnR", new Rectangle(200, 25, 175, 175)));
+		btnList.add(new Btn("Scale +", "scaleBtnBigger", new Rectangle(400, 225, 175, 175)));
+		btnList.add(new Btn("Scale -", "scaleBtnSmaller", new Rectangle(200, 225, 175, 175)));
+		btnList.add(new Btn("Check", "checkBtn", new Rectangle(350, 425, 300, 100)));
+//		btnList.add(new Btn(temp, "checkBtn", new Rectangle(frame.getSize().width - 250, 475, 225, 200)));
+
 //		frame.setSize(1920 / 2, 1080 / 2);
 
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+//		frame.setSize(1280, 720);
 
 //		frame.setResizable(true);
 //		frame.setUndecorated(true);
+
 		frame.setVisible(true);
 		this.setFocusTraversalKeysEnabled(false); // ???
 		this.start();
@@ -107,7 +114,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 			kontinentList.add(k);
 		}
 
-		System.out.println(frame.getWidth() / 7);
 		int rec = frame.getWidth() / 7;
 		for (int i = 0; i < 7; i++) {
 			kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f;
@@ -177,19 +183,16 @@ public class KontinentLocation extends Canvas implements Runnable {
 		stop();
 	}
 
-	private void render2d() {
+	private void render2d() { // TODO scale 2d ???
 		BufferStrategy bs = this.getBufferStrategy();
 		if (bs == null) {
 			this.createBufferStrategy(3);
 			return;
 		}
 		Graphics g = bs.getDrawGraphics();
-
 		scale = w() / 1920f;
 		if (h() / 1080f < scale && h() / 1080f < 1)
 			scale = h() / 1080f;
-
-//		System.out.println("scale: " + scale);
 
 		// hintergrund
 		g.setColor(Color.DARK_GRAY);
@@ -197,9 +200,9 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 		// SideMenu
 		g.setColor(Color.GRAY.darker());
-		g.fillRect(w() - (int) (300 * scale), 0, (int) (300 * scale), h() - w() / 7);
+		g.fillRect(w() - (int) (450 * scale), 0, (int) (450 * scale), h() - w() / 7);
 		g.setColor(Color.BLACK);
-		g.drawRect(w() - (int) (300 * scale), 0, (int) (300 * scale), h() - w() / 7);
+		g.drawRect(w() - (int) (450 * scale), 0, (int) (450 * scale), h() - w() / 7);
 
 		for (Btn tempBtn : btnList)
 			tempBtn.render(g, getWidth(), getHeight(), scale);
@@ -304,7 +307,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 //			g.drawImage(kontinentList.get(i).image, w() / 7 * i, h() - rec, w() / 7, rec, null);
 			kontinentList.get(i).moveInObjectScreen(new Rectangle(0, 0, w(), h()));
 			kontinentList.get(i).render(g, w() / 7 * i, h() - rec, w() / 7, rec);
-
 		}
 		if (selectedKontinent != null)
 			selectedKontinent.render(g, w() / 7, h() - rec, w() / 7, rec);
@@ -352,9 +354,21 @@ public class KontinentLocation extends Canvas implements Runnable {
 	public void triggerBtn(String id) {
 //		System.out.println("btnTrigger: " + id);
 		switch (id) {
-		case "rotateBtn":
+		case "rotateBtnL":
+			if (selectedKontinent != null)
+				selectedKontinent.originalImage = rotateImage(selectedKontinent.originalImage, -90.0);
+			break;
+		case "rotateBtnR":
 			if (selectedKontinent != null)
 				selectedKontinent.originalImage = rotateImage(selectedKontinent.originalImage, 90.0);
+			break;
+		case "scaleBtnBigger":
+			if (selectedKontinent != null)
+				scroll(3);
+			break;
+		case "scaleBtnSmaller":
+			if (selectedKontinent != null)
+				scroll(-3);
 			break;
 		case "checkBtn":
 			if (selectedKontinent == null) {
@@ -390,7 +404,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 	private boolean getPixelInImage(Point p, BufferedImage image) {
 		int clr = image.getRGB(p.x, p.y);
-		int alpha = (clr & 0xff) >> 24;
+//		int alpha = (clr & 0xff) >> 24;
 		int red = (clr & 0x00ff0000) >> 16;
 		int green = (clr & 0x0000ff00) >> 8;
 		int blue = clr & 0x000000ff;
@@ -409,12 +423,25 @@ public class KontinentLocation extends Canvas implements Runnable {
 //		return new Color(img.getRGB(p.x, p.y), true);
 //	}
 
-	public void scroll(int amount) {
+	public void scroll(int amount) {// , int mx, int my) {
 		if (selectedKontinent != null) {
-			if (amount > 0)
+			if (amount > 0) { // TODO mouse Position...
+//				selectedKontinent.rect.x += (selectedKontinent.rect.width * 0.02f) / 2;
+//				selectedKontinent.rect.y += (selectedKontinent.rect.height * 0.02f) / 2;
+//				selectedKontinent.dx += (selectedKontinent.rect.width * 0.02f) / 2;
+//				selectedKontinent.dy += (selectedKontinent.rect.height * 0.02f) / 2;
+//				selectedKontinent.dx = (int) (selectedKontinent.dx * 0.02f);
+//				selectedKontinent.dy = (int) (selectedKontinent.dy * 0.02f);
+//				System.out.println(selectedKontinent.dx + " " + selectedKontinent.dy);
 				selectedKontinent.size += 0.02f;
-			else
+
+			} else {
+//				selectedKontinent.rect.x -= (selectedKontinent.rect.width * 0.02f) / 2;
+//				selectedKontinent.rect.y -= (selectedKontinent.rect.height * 0.02f) / 2;
+//				selectedKontinent.dx -= (selectedKontinent.rect.width * 0.02f) / 2;
+//				selectedKontinent.dy -= (selectedKontinent.rect.height * 0.02f) / 2;
 				selectedKontinent.size -= 0.02f;
+			}
 		}
 	}
 

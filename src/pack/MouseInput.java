@@ -68,6 +68,8 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 	public void mouseWheelMoved(MouseWheelEvent e) {
 //		System.out.println(e.getScrollAmount());
 //		System.out.println(e.getWheelRotation());
+		e.getX();
+		e.getY();
 		kontinentLocation.scroll(e.getScrollAmount() * e.getWheelRotation());
 	}
 

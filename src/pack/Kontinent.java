@@ -1,8 +1,8 @@
 package pack;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
@@ -13,7 +13,8 @@ public class Kontinent {
 	public Rectangle rect;
 	public float size = 1f; // scale
 //	public Point p; // TODO replace by rect
-	private int dx = 0, dy = 0;
+	public int dx = 0, dy = 0;
+	// start location...
 
 	public Kontinent(String name, BufferedImage image) {
 		this.name = name;
@@ -31,7 +32,7 @@ public class Kontinent {
 		rect.y = y - dy;
 	}
 
-	public static BufferedImage scale(BufferedImage imageToScale, int dWidth, int dHeight) {
+	public static BufferedImage scaleImage(BufferedImage imageToScale, int dWidth, int dHeight) {
 		BufferedImage scaledImage = null;
 		if (imageToScale != null) {
 			scaledImage = new BufferedImage(dWidth, dHeight, imageToScale.getType());
@@ -43,13 +44,12 @@ public class Kontinent {
 	}
 
 	public void render(Graphics g, int x, int y, int w, int h) {
-		image = scale(originalImage, (int) (originalImage.getWidth() * size), (int) (originalImage.getHeight() * size));
+		image = scaleImage(originalImage, (int) (originalImage.getWidth() * size),
+				(int) (originalImage.getHeight() * size));
 // TODO scale - originalImage.width...
 
 		rect = new Rectangle(rect.x, rect.y, (int) (image.getWidth()), (int) (image.getHeight()));
 
-//		g.setColor(Color.RED);
-//		g.drawRect(p.x, p.y, (int) (box.width), (int) (box.height));
 		g.drawImage(image, rect.x, rect.y, image.getWidth(), image.getHeight(), null);
 
 		// Debug
@@ -59,28 +59,16 @@ public class Kontinent {
 //				if (getPI(new Point(xx, yy)))
 //					g.drawRect(p.x + xx, p.y + yy, 2, 2);
 //			}
-	}
 
-	private boolean getPI(Point p) {
-		try {
-			int clr = image.getRGB(p.x, p.y);
-			int red = (clr & 0x00ff0000) >> 16;
-			int green = (clr & 0x0000ff00) >> 8;
-			int blue = clr & 0x000000ff;
-			if (red != 0 || green != 0 || blue != 0)
-				return true;
-			else
-				return false;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+// DEBUG: hitBox
+//		g.setColor(Color.BLUE);
+//		g.drawRect(rect.x, rect.y, rect.width, rect.height);
 
-//	public void renderBox(Graphics g, int x, int y, int w, int h) {
-//		box = new Rectangle(x, y, w, h);
-//		g.drawRect(x, y, w, h);
-//		g.drawImage(image, x, y, w, h, null);
-//	}
+// DEBUG: selectPoints
+//		g.setColor(Color.RED);
+//		g.fillRect(rect.x + dx, rect.y + dy, 4, 4);
+
+	}
 
 	public boolean boxIsTouched(int x, int y) {
 		if (x > rect.x && x < rect.x + rect.width && y > rect.y && y < rect.y + rect.height)
