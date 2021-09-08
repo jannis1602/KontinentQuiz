@@ -2,6 +2,7 @@ package pack;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -40,14 +41,21 @@ public class Btn {
 		g.fillRect(rect.x + rect.width / 20, rect.y + rect.width / 20, rect.width - rect.width / 20 * 2,
 				rect.height - rect.width / 20 * 2);
 		if (image != null) {
-			g.drawImage(image, rect.x + rect.width / 20, rect.y + rect.width / 20, rect.width - rect.width / 20 * 2,
-					rect.height - rect.width / 20 * 2, null);
+			g.drawImage(image, rect.x + rect.width / 20 + 4, rect.y + rect.width / 20 + 4,
+					rect.width - rect.width / 20 * 2 - 8, rect.height - rect.width / 20 * 2 - 8, null);
 		}
 		if (text != null) {
 			g.setColor(Color.BLACK);
-			g.setFont(new Font("ROBOTO", Font.PLAIN, 20));
-			g.drawString(text, rect.x + rect.width / 10 + (int) (30 * scale), rect.y + rect.height / 2);
+			drawCenteredString(g, text, rect, new Font("ROBOTO", Font.PLAIN, 20));
 		}
+	}
+
+	public void drawCenteredString(Graphics g, String text, Rectangle rect, Font font) {
+		FontMetrics metrics = g.getFontMetrics(font);
+		int x = rect.x + (rect.width - metrics.stringWidth(text)) / 2;
+		int y = rect.y + ((rect.height - metrics.getHeight()) / 2) + metrics.getAscent();
+		g.setFont(font);
+		g.drawString(text, x, y);
 	}
 
 	public String checkBox(Point p) {
@@ -55,7 +63,6 @@ public class Btn {
 			return ID;
 		else
 			return null;
-
 	}
 
 }

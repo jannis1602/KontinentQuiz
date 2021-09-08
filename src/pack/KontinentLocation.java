@@ -45,6 +45,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		imgLoader = new BufferedImageLoader();
 // load Images
 		solutionImage = new BufferedImageLoader().loadImage("Kontinente.png");
+
 		kontinentList = new LinkedList<Kontinent>();
 		Random r = new Random();
 		for (String s : kontinente) {
@@ -67,10 +68,10 @@ public class KontinentLocation extends Canvas implements Runnable {
 		frame.setSize(1920, 1080);
 
 // Buttons
-		btnList.add(new Btn("Rotate L", "rotateBtnL", new Rectangle(400, 25, 175, 175)));
-		btnList.add(new Btn("Rotate R", "rotateBtnR", new Rectangle(200, 25, 175, 175)));
-		btnList.add(new Btn("Scale +", "scaleBtnBigger", new Rectangle(400, 225, 175, 175)));
-		btnList.add(new Btn("Scale -", "scaleBtnSmaller", new Rectangle(200, 225, 175, 175)));
+		btnList.add(new Btn(loadImage("rotateLeft"), "rotateBtnL", new Rectangle(400, 25, 175, 175)));
+		btnList.add(new Btn(loadImage("rotateRight"), "rotateBtnR", new Rectangle(200, 25, 175, 175)));
+		btnList.add(new Btn(loadImage("bigger"), "scaleBtnBigger", new Rectangle(400, 225, 175, 175)));
+		btnList.add(new Btn(loadImage("smaller"), "scaleBtnSmaller", new Rectangle(200, 225, 175, 175)));
 		btnList.add(new Btn("Check", "checkBtn", new Rectangle(350, 425, 300, 100)));
 		btnList.add(new Btn("Lösung", "solutionBtn", new Rectangle(350, 550, 300, 100)));
 		btnList.add(new Btn("Reset", "resetBtn", new Rectangle(350, 675, 300, 100)));
@@ -96,7 +97,11 @@ public class KontinentLocation extends Canvas implements Runnable {
 	}
 
 	private BufferedImage loadImage(String name) {
-		BufferedImage img = imgLoader.loadImage(name + ".png");
+		BufferedImage img = null;
+		if (name.contains(".png"))
+			img = imgLoader.loadImage(name);
+		else
+			img = imgLoader.loadImage(name + ".png");
 		return img;
 	}
 
