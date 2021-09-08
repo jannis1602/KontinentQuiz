@@ -32,7 +32,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	private Kontinent selectedKontinent = null;
 	private boolean draggingKontinent = false;
 	private BufferedImage rand;
-	private BufferedImage solutionImage;
+	private BufferedImage solutionImage, worldImage;
 	private String end = null;
 	private boolean showSolution = false;
 	public static Point mouseXY = new Point(0, 0);
@@ -45,6 +45,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		imgLoader = new BufferedImageLoader();
 // load Images
 		solutionImage = new BufferedImageLoader().loadImage("Kontinente.png");
+		worldImage = loadImage("WorldNoName");
 
 		kontinentList = new LinkedList<Kontinent>();
 		Random r = new Random();
@@ -174,8 +175,9 @@ public class KontinentLocation extends Canvas implements Runnable {
 // Weltkarte
 		g.setColor(new Color(0, 105, 153));
 		if (showSolution)
-			g.drawImage(solutionImage, 50, 20, (int) (1348 * scale), (int) (720 * scale), null);
-		g.drawImage(rand, 50, 20, (int) (1348 * scale), (int) (720 * scale), null);
+			g.drawImage(worldImage, 125, 50, (int) (1300 * scale), (int) (680 * scale), null);
+//		g.drawImage(solutionImage, 50, 20, (int) (1348 * scale), (int) (720 * scale), null); // TODO scale position
+		g.drawImage(rand, 25, 20, (int) (1400 * scale), (int) (720 * scale), null);// 1348
 
 // Kontinentauswahl
 		g.setColor(Color.GRAY);
