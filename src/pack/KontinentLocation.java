@@ -34,6 +34,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	private BufferedImage rand;
 	private BufferedImage solutionImage;
 	private String end = null;
+	private boolean showSolution = false;
 	public static Point mouseXY = new Point(0, 0);
 
 	public KontinentLocation() {
@@ -71,6 +72,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 		btnList.add(new Btn("Scale +", "scaleBtnBigger", new Rectangle(400, 225, 175, 175)));
 		btnList.add(new Btn("Scale -", "scaleBtnSmaller", new Rectangle(200, 225, 175, 175)));
 		btnList.add(new Btn("Check", "checkBtn", new Rectangle(350, 425, 300, 100)));
+		btnList.add(new Btn("Lösung", "solutionBtn", new Rectangle(350, 550, 300, 100)));
+		btnList.add(new Btn("Reset", "resetBtn", new Rectangle(350, 675, 300, 100)));
 
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -165,7 +168,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 // Weltkarte
 		g.setColor(new Color(0, 105, 153));
-		if (end != null)
+		if (showSolution)
 			g.drawImage(solutionImage, 50, 20, (int) (1348 * scale), (int) (720 * scale), null);
 		g.drawImage(rand, 50, 20, (int) (1348 * scale), (int) (720 * scale), null);
 
@@ -256,6 +259,24 @@ public class KontinentLocation extends Canvas implements Runnable {
 					System.out.println(k.name + " => " + k.rect.x + "|" + k.rect.y + " - " + k.size);
 				checkAnswere();
 			}
+			break;
+		case "solutionBtn":
+			showSolution = !showSolution;
+			break;
+		case "resetBtn":
+			Random r = new Random();
+			for (int i = 0; i < 14; i++) {
+				Kontinent k = kontinentList.get(r.nextInt(6));
+				kontinentList.remove(k);
+				kontinentList.add(k);
+			}
+			for (int i = 0; i < 7; i++) {
+				kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).originalImage.getWidth();
+				kontinentList.get(i).rect = new Rectangle(w() / 7 * i, h() - frame.getWidth() / 7, 10, 10);
+			}
+			showSolution = false;
+			selectedKontinent = null;
+			end = null;
 			break;
 		default:
 			break;

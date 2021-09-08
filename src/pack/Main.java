@@ -119,6 +119,7 @@ public class Main {
 		modiFrame.setVisible(true);
 		modiFrame.pack();
 		modiFrame.setLocationRelativeTo(null);
+		panel.requestFocus();
 
 // request update			
 		if (true) {
@@ -298,8 +299,8 @@ public class Main {
 	}
 
 	private void checkAnswere() {
-		System.out.println("check");
-		System.out.println(tf.getText() + " >>> " + kontinent);
+//		System.out.println("check");
+//		System.out.println(tf.getText() + " >>> " + kontinent);
 		if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent)) {
 			System.out.println("True");
 			richtig++;
