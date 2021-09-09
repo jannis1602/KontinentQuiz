@@ -7,6 +7,9 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+/*
+ * Jannis Mattlage 
+ */
 
 public class Btn {
 
@@ -15,6 +18,10 @@ public class Btn {
 	private Rectangle rect; // scaled rect
 	private Rectangle oRect; // original rect
 	private String ID;
+
+	public String getID() {
+		return ID;
+	}
 
 // TODO: create image once -> render image
 	public Btn(String text, String ID, Rectangle rect) {

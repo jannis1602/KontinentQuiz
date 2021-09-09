@@ -49,6 +49,7 @@ public class Main {
 	private BufferedImageLoader imgLoader;
 	private int richtig = 0;
 	private int falsch = 0;
+	private int versuche = 0;
 	private static String serverReleaseVersion;
 	private static String updateUrl = null;
 
@@ -307,13 +308,20 @@ public class Main {
 	}
 
 	private void checkAnswere() {
+
 		if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent)) {
 			richtig++;
 			labelRichtig.setText("  Richtig: " + richtig);
 			loadImage();
+			versuche = 0;
 		} else {
+			versuche++;
 			falsch++;
 			labelFalsch.setText("  Falsch: " + falsch);
+			if (versuche >= 3) {
+				versuche = 0;
+				loadImage();
+			}
 		}
 		tf.setText(null);
 	}

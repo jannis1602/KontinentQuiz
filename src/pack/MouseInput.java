@@ -13,6 +13,7 @@ import java.awt.event.MouseWheelListener;
 public class MouseInput implements MouseListener, MouseMotionListener, MouseWheelListener {
 
 	private KontinentLocation kontinentLocation;
+	private boolean mouseIsPressed = false;
 
 	public MouseInput(KontinentLocation kontinentLocation) {
 		this.kontinentLocation = kontinentLocation;
@@ -52,7 +53,28 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 		if (!kontinentLocation.checkKontinentBox(new Point(x, y), true))
 			for (Btn tempBtn : kontinentLocation.btnList) {
 				if (tempBtn.checkBox(new Point(x, y)) != null) {
+					mouseIsPressed = true;
 					kontinentLocation.triggerBtn(tempBtn.checkBox(new Point(x, y)));
+					Thread thread = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							while (mouseIsPressed) {
+								kontinentLocation.triggerBtn(tempBtn.checkBox(new Point(x, y)));
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					if (tempBtn.getID().contains("rotate") || tempBtn.getID().contains("scale"))
+						thread.start();
 					return;
 				}
 			}
@@ -60,6 +82,7 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		mouseIsPressed = false;
 		kontinentLocation.checkKontinentBox(new Point(x, y), false);
 	}
 

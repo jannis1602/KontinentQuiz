@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -71,6 +73,22 @@ public class KontinentLocation extends Canvas implements Runnable {
 		addMouseListener(mouseInput);
 		addMouseWheelListener(mouseInput);
 		addMouseMotionListener(mouseInput);
+		addKeyListener(new KeyListener() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				if (selectedKontinent != null)
+					selectedKontinent.originalImage = rotateImage(selectedKontinent.originalImage, 90.0);
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+
+			}
+		});
 		frame = new JFrame("Kontinent Quiz");
 //		frame.setIconImage(loadImage("continents/" + kontinentList.getFirst().name));
 		frame.add(this);
@@ -165,8 +183,9 @@ public class KontinentLocation extends Canvas implements Runnable {
 // Weltkarte
 		g.setColor(new Color(0, 105, 153));
 		if (showSolution)
-			g.drawImage(worldImage, 125, 50, (int) (1300 * scale), (int) (680 * scale), null);
-		g.drawImage(rand, 25, 20, (int) (1400 * scale), (int) (720 * scale), null);// 1348
+			g.drawImage(worldImage, (int) (125 * scale), (int) (55 * scale), (int) (1300 * scale), (int) (680 * scale),
+					null);
+		g.drawImage(rand, (int) (25 * scale), (int) (20 * scale), (int) (1400 * scale), (int) (720 * scale), null);// 1348
 
 // Kontinentauswahl
 		g.setColor(Color.GRAY);
@@ -323,7 +342,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 //				selectedKontinent.dy = (int) (selectedKontinent.dy * 0.02f);
 //				System.out.println(selectedKontinent.dx + " " + selectedKontinent.dy);
 				selectedKontinent.size += 0.02f;
-
 			} else {
 //				selectedKontinent.rect.x -= (selectedKontinent.rect.width * 0.02f) / 2;
 //				selectedKontinent.rect.y -= (selectedKontinent.rect.height * 0.02f) / 2;
@@ -370,7 +388,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		Float cScale = 0.0f;
 		switch (name) {
 		case "australien":
-			point = new Point(1053, 391);
+			point = new Point(1040, 395);
 			cScale = 0.42f;
 			break;
 		case "südamerika":
@@ -378,7 +396,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 			cScale = 0.56f;
 			break;
 		case "afrika":
-			point = new Point(595, 253);
+			point = new Point(590, 255);
 			cScale = 0.56f;
 			break;
 		case "asien":
@@ -390,21 +408,23 @@ public class KontinentLocation extends Canvas implements Runnable {
 			cScale = 0.78f;
 			break;
 		case "antarktis":
-			point = new Point(421, 352);
+			point = new Point(412, 352);
 			cScale = 1.26f;
 			break;
 		case "europa":
-			point = new Point(676, 68);
+			point = new Point(662, 65);
 			cScale = 0.42f;
 			break;
 		default:
 			break;
 		}
 		Float sc = (s - cScale * scale);
-		System.out.println(name + " - distance(+-40) " + Point.distance(p.x, p.y, point.x * scale, point.y * scale)
-				+ " - diff. scale(+-0.08): " + sc);
-		System.out.println(name + " - " + p.x + " -> " + point.x * scale + " || " + p.y + " -> " + point.y * scale
-				+ " || " + s + " -> " + cScale * scale);
+//		System.out.println(name + " - distance(+-40) " + Point.distance(p.x, p.y, point.x * scale, point.y * scale)
+//				+ " - diff. scale(+-0.08): " + sc);
+//		System.out.println(name + " - " + p.x + " -> " + point.x * scale + " || " + p.y + " -> " + point.y * scale
+//				+ " || " + s + " -> " + cScale * scale);
+//		System.out.println(name + " - " + p.x * (2 - scale) + " -> " + point.x + " || " + p.y * (2 - scale) + " -> "
+//				+ point.y + " || " + s + " -> " + cScale * scale);
 		if (Point.distance(p.x, p.y, point.x * scale, point.y * scale) < 40 // 20
 				&& (sc < 0.08f && sc > -0.08f))
 			return true;
