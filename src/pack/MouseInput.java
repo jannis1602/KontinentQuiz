@@ -46,14 +46,13 @@ public class MouseInput implements MouseListener, MouseMotionListener, MouseWhee
 	public void mousePressed(MouseEvent e) {
 		x = e.getX();
 		y = e.getY();
-		for (Btn tempBtn : kontinentLocation.btnList) {
-			if (tempBtn.checkBox(new Point(x, y)) != null) {
-				kontinentLocation.triggerBtn(tempBtn.checkBox(new Point(x, y)));
-				return;
+		if (!kontinentLocation.checkKontinentBox(new Point(x, y), true))
+			for (Btn tempBtn : kontinentLocation.btnList) {
+				if (tempBtn.checkBox(new Point(x, y)) != null) {
+					kontinentLocation.triggerBtn(tempBtn.checkBox(new Point(x, y)));
+					return;
+				}
 			}
-		}
-		kontinentLocation.checkKontinentBox(new Point(x, y), true);
-
 	}
 
 	@Override

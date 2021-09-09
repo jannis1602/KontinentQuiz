@@ -35,14 +35,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import Image.BufferedImageLoader;
+import image.BufferedImageLoader;
 
 /*
  * Jannis Mattlage 
  */
 
 public class Main {
-	public static final String version = "0.1.5";
+	public static final String version = "0.2.0";
 	private JLabel labelImg;
 	private JTextField tf;
 	JLabel labelRichtig, labelFalsch;
@@ -151,8 +151,6 @@ public class Main {
 								Paths.get(getJarExecutionDirectory()
 										+ updateUrl.split("/")[updateUrl.split("/").length - 1]),
 								StandardCopyOption.REPLACE_EXISTING);
-//						Runtime.getRuntime().exec("cmd /c start " + getJarExecutionDirectory()
-//								+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " " + filePath);
 						Runtime.getRuntime()
 								.exec("cmd /c start " + getJarExecutionDirectory()
 										+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " "
@@ -210,6 +208,8 @@ public class Main {
 		return jarDirectory + System.getProperty("file.separator");
 	}
 
+// Kontinente erkennen - Game	
+
 	public Main() {
 		imgLoader = new BufferedImageLoader();
 		JFrame frame = new JFrame("Kontinent Quiz");
@@ -217,10 +217,15 @@ public class Main {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		BufferedImage img = imgLoader.loadImage("afrika.png");
+		panel.setBackground(Color.DARK_GRAY);
+		BufferedImage img = imgLoader.loadImage("continents/afrika.png");
 
-		labelRichtig = new JLabel(" Richtig:0");
-		labelFalsch = new JLabel(" Falsch:0");
+		labelRichtig = new JLabel("  Richtig: 0");
+		labelFalsch = new JLabel("  Falsch: 0");
+		labelRichtig.setForeground(Color.GREEN);
+		labelFalsch.setForeground(Color.RED);
+		labelRichtig.setFont(new Font("ROBOTO", Font.PLAIN, 18));
+		labelFalsch.setFont(new Font("ROBOTO", Font.PLAIN, 18));
 
 		GridBagConstraints c0 = new GridBagConstraints();
 		c0.fill = GridBagConstraints.BOTH;
@@ -253,8 +258,10 @@ public class Main {
 		Panel panelText = new Panel();
 		panelText.setLayout(new FlowLayout());
 		JLabel labelQuestion = new JLabel("Name des Kontinents: ");
+		labelQuestion.setFont(new Font("ROBOTO", Font.PLAIN, 18));
 		panelText.add(labelQuestion);
 		tf = new JTextField(20);
+		tf.setFont(new Font("ROBOTO", Font.PLAIN, 18));
 		tf.addKeyListener(new KeyListener() {
 
 			@Override
@@ -274,6 +281,7 @@ public class Main {
 		});
 		panelText.add(tf);
 		JButton btnOK = new JButton("OK");
+		btnOK.setFont(new Font("ROBOTO", Font.PLAIN, 18));
 		btnOK.addActionListener(new ActionListener() {
 
 			@Override
@@ -282,7 +290,7 @@ public class Main {
 			}
 		});
 		panelText.add(btnOK);
-		panelText.setBackground(Color.LIGHT_GRAY);
+		panelText.setBackground(Color.GRAY);
 
 		GridBagConstraints c2 = new GridBagConstraints();
 		c2.fill = GridBagConstraints.BOTH;
@@ -299,16 +307,13 @@ public class Main {
 	}
 
 	private void checkAnswere() {
-//		System.out.println("check");
-//		System.out.println(tf.getText() + " >>> " + kontinent);
 		if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent)) {
-			System.out.println("True");
 			richtig++;
-			labelRichtig.setText(" Richtig:" + richtig);
+			labelRichtig.setText("  Richtig: " + richtig);
 			loadImage();
 		} else {
 			falsch++;
-			labelFalsch.setText(" Falsch:" + falsch);
+			labelFalsch.setText("  Falsch: " + falsch);
 		}
 		tf.setText(null);
 	}
@@ -318,7 +323,7 @@ public class Main {
 		String kont = kontinente[r.nextInt(6)];
 		while (kont == kontinent)
 			kont = kontinente[r.nextInt(6)];
-		BufferedImage img = imgLoader.loadImage(kont + ".png");
+		BufferedImage img = imgLoader.loadImage("continents/" + kont + ".png");
 		kontinent = kont;
 		img = rotate(img, r.nextInt(11) * 90.0);
 		labelImg.setIcon(new ImageIcon(img));

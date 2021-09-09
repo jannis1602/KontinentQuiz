@@ -29,7 +29,6 @@ public class Btn {
 		this.ID = ID;
 		this.rect = rect;
 		this.oRect = rect;
-
 	}
 
 	public void render(Graphics g, int w, int h, float scale) {
@@ -38,11 +37,11 @@ public class Btn {
 				(int) (oRect.height * scale));
 		g.fillRect(rect.x, rect.y, rect.width, rect.height);
 		g.setColor(Color.GRAY);
-		g.fillRect(rect.x + rect.width / 20, rect.y + rect.width / 20, rect.width - rect.width / 20 * 2,
-				rect.height - rect.width / 20 * 2);
+		g.fillRect((int) (rect.x + 10 * scale), (int) (rect.y + 10 * scale), (int) (rect.width - +10 * scale * 2),
+				(int) (rect.height - 10 * scale * 2));
 		if (image != null) {
-			g.drawImage(image, rect.x + rect.width / 20 + 4, rect.y + rect.width / 20 + 4,
-					rect.width - rect.width / 20 * 2 - 8, rect.height - rect.width / 20 * 2 - 8, null);
+			g.drawImage(image, rect.x + rect.width / 8, rect.y + rect.width / 8, rect.width - rect.width / 8 * 2,
+					rect.height - rect.width / 8 * 2, null);
 		}
 		if (text != null) {
 			g.setColor(Color.BLACK);

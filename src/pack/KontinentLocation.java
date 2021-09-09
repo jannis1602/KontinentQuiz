@@ -15,26 +15,24 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import Image.BufferedImageLoader;
+import image.BufferedImageLoader;
 
 public class KontinentLocation extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
+	private static JFrame frame;
+	private float scale = 1f;
 	private boolean running;
+	private boolean showSolution = false;
+	private boolean draggingKontinent = false;
 	private Thread thread;
-	public static JFrame frame;
-	private BufferedImageLoader imgLoader;
 	private String[] kontinente = { "afrika", "antarktis", "asien", "australien", "europa", "nordamerika",
 			"südamerika", };
-
-	public LinkedList<Btn> btnList;
-	public LinkedList<Kontinent> kontinentList;
-	private float scale = 1f;
+	private BufferedImageLoader imgLoader;
+	private BufferedImage rand, worldImage;
+	private LinkedList<Kontinent> kontinentList;
 	private Kontinent selectedKontinent = null;
-	private boolean draggingKontinent = false;
-	private BufferedImage rand;
-	private BufferedImage solutionImage, worldImage;
 	private String end = null;
-	private boolean showSolution = false;
+	public LinkedList<Btn> btnList;
 	public static Point mouseXY = new Point(0, 0);
 
 	public KontinentLocation() {
@@ -42,55 +40,44 @@ public class KontinentLocation extends Canvas implements Runnable {
 	}
 
 	private void init() {
-		imgLoader = new BufferedImageLoader();
 // load Images
-		solutionImage = new BufferedImageLoader().loadImage("Kontinente.png");
+		imgLoader = new BufferedImageLoader();
 		worldImage = loadImage("WorldNoName");
-
 		kontinentList = new LinkedList<Kontinent>();
 		Random r = new Random();
 		for (String s : kontinente) {
-			kontinentList.add(new Kontinent(s, rotateImage(loadImage(s), 90.0 * r.nextInt(11))));
+			kontinentList.add(new Kontinent(s, rotateImage(loadImage("continents/" + s), 90.0 * r.nextInt(11))));
 		}
-		rand = loadImage("rand");
-
-		btnList = new LinkedList<Btn>();
-		// Frame
-		MouseInput mouseInput = new MouseInput(this);
-		addMouseListener(mouseInput);
-		addMouseWheelListener(mouseInput);
-		addMouseMotionListener(mouseInput);
-		frame = new JFrame("Kontinent Quiz");
-		// BufferedImageLoader iconload = new BufferedImageLoader();
-		// Image frameicon = iconload.loadImage("GameMap10Level1.png");
-		// frame.setIconImage(frameicon);
-		frame.add(this);
-		// frame.setSize(1280, 720);
-		frame.setSize(1920, 1080);
-
-// Buttons
-		btnList.add(new Btn(loadImage("rotateLeft"), "rotateBtnL", new Rectangle(400, 25, 175, 175)));
-		btnList.add(new Btn(loadImage("rotateRight"), "rotateBtnR", new Rectangle(200, 25, 175, 175)));
-		btnList.add(new Btn(loadImage("bigger"), "scaleBtnBigger", new Rectangle(400, 225, 175, 175)));
-		btnList.add(new Btn(loadImage("smaller"), "scaleBtnSmaller", new Rectangle(200, 225, 175, 175)));
-		btnList.add(new Btn("Check", "checkBtn", new Rectangle(350, 425, 300, 100)));
-		btnList.add(new Btn("Lösung", "solutionBtn", new Rectangle(350, 550, 300, 100)));
-		btnList.add(new Btn("Reset", "resetBtn", new Rectangle(350, 675, 300, 100)));
-
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		// frame.setSize(1280, 720);
-		this.setFocusTraversalKeysEnabled(false); // ???
-		this.start();
-		frame.setVisible(true);
-
 		for (int i = 0; i < 14; i++) {
 			Kontinent k = kontinentList.get(r.nextInt(6));
 			kontinentList.remove(k);
 			kontinentList.add(k);
 		}
-
+		rand = loadImage("rand");
+// Buttons
+		btnList = new LinkedList<Btn>();
+		btnList.add(new Btn(loadImage("btn/rotateLeft"), "rotateBtnL", new Rectangle(400, 25, 175, 175)));
+		btnList.add(new Btn(loadImage("btn/rotateRight"), "rotateBtnR", new Rectangle(200, 25, 175, 175)));
+		btnList.add(new Btn(loadImage("btn/bigger"), "scaleBtnBigger", new Rectangle(400, 225, 175, 175)));
+		btnList.add(new Btn(loadImage("btn/smaller"), "scaleBtnSmaller", new Rectangle(200, 225, 175, 175)));
+		btnList.add(new Btn("Check", "checkBtn", new Rectangle(350, 425, 300, 100)));
+		btnList.add(new Btn("Lösung", "solutionBtn", new Rectangle(350, 550, 300, 100)));
+		btnList.add(new Btn("Reset", "resetBtn", new Rectangle(350, 675, 300, 100)));
+// Frame
+		MouseInput mouseInput = new MouseInput(this);
+		addMouseListener(mouseInput);
+		addMouseWheelListener(mouseInput);
+		addMouseMotionListener(mouseInput);
+		frame = new JFrame("Kontinent Quiz");
+//		frame.setIconImage(loadImage("continents/" + kontinentList.getFirst().name));
+		frame.add(this);
+		frame.setSize(1920, 1080); // 1280, 720
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		this.start();
+		frame.setVisible(true);
+		// scaling Btns
 		for (int i = 0; i < 7; i++) {
 			kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).image.getWidth() * 1f;
 			kontinentList.get(i).rect = new Rectangle(w() / 7 * i, h() - frame.getWidth() / 7, 10, 10);
@@ -176,7 +163,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 		g.setColor(new Color(0, 105, 153));
 		if (showSolution)
 			g.drawImage(worldImage, 125, 50, (int) (1300 * scale), (int) (680 * scale), null);
-//		g.drawImage(solutionImage, 50, 20, (int) (1348 * scale), (int) (720 * scale), null); // TODO scale position
 		g.drawImage(rand, 25, 20, (int) (1400 * scale), (int) (720 * scale), null);// 1348
 
 // Kontinentauswahl
@@ -262,8 +248,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 		case "checkBtn":
 			if (!draggingKontinent) {
 				selectedKontinent = null;
-				for (Kontinent k : kontinentList)
-					System.out.println(k.name + " => " + k.rect.x + "|" + k.rect.y + " - " + k.size);
+//				for (Kontinent k : kontinentList)
+//					System.out.println(k.name + " => " + k.rect.x + "|" + k.rect.y + " - " + k.size);
 				checkAnswere();
 			}
 			break;
@@ -291,31 +277,25 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 	}
 
-	public void checkKontinentBox(Point p, boolean selectMode) {
+	public boolean checkKontinentBox(Point p, boolean selectMode) {
 		if (selectMode) {
 			for (Kontinent k : kontinentList) {
 				if (k.boxIsTouched(p.x, p.y) && getPixelInImage(new Point(p.x - k.rect.x, p.y - k.rect.y), k.image)) {
-					// TODO if selected == touched => null
-//					if (selectedKontinent != null) {
-//						System.out.println(k.name + " - " + selectedKontinent.name);
-//						if (k.name.contains(selectedKontinent.name)) {
-//							selectedKontinent = null;
-//							System.out.println(k.name + " - " + k.rect.x + "|" + k.rect.y + " - " + k.size);
-//							draggingKontinent = false;
-//							return;
-//						}
-//					}
 					selectedKontinent = k;
 					k.select(p.x, p.y);
 					end = null;
+					showSolution = false;
 					draggingKontinent = true;
+					return true;
 				}
 			}
 		} else if (draggingKontinent) {
-			Kontinent k = selectedKontinent;
-			System.out.println(k.name + " - " + k.rect.x + "|" + k.rect.y + " - " + k.size);
+//			System.out.println(selectedKontinent.name + " - " + selectedKontinent.rect.x + "|"
+//					+ selectedKontinent.rect.y + " - " + selectedKontinent.size);
 			draggingKontinent = false;
+			return false;
 		}
+		return false;
 	}
 
 	private boolean getPixelInImage(Point p, BufferedImage image) {
