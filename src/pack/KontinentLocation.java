@@ -16,6 +16,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import image.BufferedImageLoader;
+/*
+ * Jannis Mattlage 
+ */
 
 public class KontinentLocation extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;

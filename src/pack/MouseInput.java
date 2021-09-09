@@ -6,6 +6,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+/*
+ * Jannis Mattlage 
+ */
 
 public class MouseInput implements MouseListener, MouseMotionListener, MouseWheelListener {
 
