@@ -42,7 +42,7 @@ import image.BufferedImageLoader;
  */
 
 public class Main {
-	public static final String version = "0.2.1";
+	public static final String version = "0.2.2";
 	private JLabel labelImg;
 	private JTextField tf;
 	JLabel labelRichtig, labelFalsch;
@@ -52,9 +52,7 @@ public class Main {
 	private int versuche = 0;
 	private static String serverReleaseVersion;
 	private static String updateUrl = null;
-
 	static JFrame modiFrame;
-
 	private String[] kontinente = { "afrika", "antarktis", "asien", "australien", "europa", "nordamerika",
 			"südamerika", };
 	private String kontinent = null;
@@ -111,10 +109,10 @@ public class Main {
 		jb3.addActionListener(al);
 
 		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(3, 1));
+		panel.setLayout(new GridLayout(2, 1));// 3
 		panel.add(jb1);
 		panel.add(jb2);
-		panel.add(jb3);
+//		panel.add(jb3);
 		modiFrame.add(panel);
 		modiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		modiFrame.setVisible(true);

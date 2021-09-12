@@ -52,7 +52,7 @@ public class Btn {
 		}
 		if (text != null) {
 			g.setColor(Color.BLACK);
-			drawCenteredString(g, text, rect, new Font("ROBOTO", Font.PLAIN, 20));
+			drawCenteredString(g, text, rect, new Font("ROBOTO", Font.PLAIN, (int) (40 * scale)));
 		}
 	}
 

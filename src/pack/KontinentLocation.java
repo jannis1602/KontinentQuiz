@@ -47,7 +47,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 	private void init() {
 // load Images
 		imgLoader = new BufferedImageLoader();
-		worldImage = loadImage("WorldNoName");
+		worldImage = loadImage("WorldDarkGreenNoName");
+
 		kontinentList = new LinkedList<Kontinent>();
 		Random r = new Random();
 		for (String s : kontinente) {
@@ -75,17 +76,18 @@ public class KontinentLocation extends Canvas implements Runnable {
 		addMouseMotionListener(mouseInput);
 		addKeyListener(new KeyListener() {
 			@Override
-			public void keyReleased(KeyEvent arg0) {
-				if (selectedKontinent != null)
-					selectedKontinent.originalImage = rotateImage(selectedKontinent.originalImage, 90.0);
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_R)
+					if (selectedKontinent != null)
+						selectedKontinent.originalImage = rotateImage(selectedKontinent.originalImage, 90.0);
 			}
 
 			@Override
-			public void keyTyped(KeyEvent arg0) {
+			public void keyTyped(KeyEvent e) {
 			}
 
 			@Override
-			public void keyPressed(KeyEvent arg0) {
+			public void keyPressed(KeyEvent e) {
 
 			}
 		});
@@ -334,19 +336,12 @@ public class KontinentLocation extends Canvas implements Runnable {
 	public void scroll(int amount) {// , int mx, int my) {
 		if (selectedKontinent != null) {
 			if (amount > 0) { // TODO mouse Position...
-//				selectedKontinent.rect.x += (selectedKontinent.rect.width * 0.02f) / 2;
-//				selectedKontinent.rect.y += (selectedKontinent.rect.height * 0.02f) / 2;
-//				selectedKontinent.dx += (selectedKontinent.rect.width * 0.02f) / 2;
-//				selectedKontinent.dy += (selectedKontinent.rect.height * 0.02f) / 2;
-//				selectedKontinent.dx = (int) (selectedKontinent.dx * 0.02f);
-//				selectedKontinent.dy = (int) (selectedKontinent.dy * 0.02f);
-//				System.out.println(selectedKontinent.dx + " " + selectedKontinent.dy);
-				selectedKontinent.size += 0.02f;
-			} else {
 //				selectedKontinent.rect.x -= (selectedKontinent.rect.width * 0.02f) / 2;
 //				selectedKontinent.rect.y -= (selectedKontinent.rect.height * 0.02f) / 2;
-//				selectedKontinent.dx -= (selectedKontinent.rect.width * 0.02f) / 2;
-//				selectedKontinent.dy -= (selectedKontinent.rect.height * 0.02f) / 2;
+				selectedKontinent.size += 0.02f;
+			} else {
+//				selectedKontinent.rect.x += (selectedKontinent.rect.width * 0.02f) / 2;
+//				selectedKontinent.rect.y += (selectedKontinent.rect.height * 0.02f) / 2;
 				selectedKontinent.size -= 0.02f;
 			}
 		}
