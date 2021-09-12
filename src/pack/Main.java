@@ -1,7 +1,6 @@
 package pack;
 
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -16,17 +15,7 @@ import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Random;
-import java.util.Scanner;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,7 +31,7 @@ import image.BufferedImageLoader;
  */
 
 public class Main {
-	public static final String version = "0.2.2";
+	public static final String version = "0.2.3";
 	private JLabel labelImg;
 	private JTextField tf;
 	JLabel labelRichtig, labelFalsch;
@@ -50,8 +39,6 @@ public class Main {
 	private int richtig = 0;
 	private int falsch = 0;
 	private int versuche = 0;
-	private static String serverReleaseVersion;
-	private static String updateUrl = null;
 	static JFrame modiFrame;
 	private String[] kontinente = { "afrika", "antarktis", "asien", "australien", "europa", "nordamerika",
 			"südamerika", };
@@ -119,79 +106,6 @@ public class Main {
 		modiFrame.pack();
 		modiFrame.setLocationRelativeTo(null);
 		panel.requestFocus();
-
-// request update			
-		if (true) {
-			getLastReleaseVersion("https://api.github.com/repos/jannis1602/KontinentQuiz/releases");
-
-			int v = Integer.parseInt(version.replaceAll("[^0-9]", ""));
-			int rv = Integer.parseInt(serverReleaseVersion.replaceAll("[^0-9]", ""));
-			System.out.println("check for updates " + v + " -> " + rv);
-
-			File filePath = null;
-			try {
-				filePath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI() + "\\"
-						+ updateUrl.split("/")[updateUrl.split("/").length - 1]);
-				System.out.println("FilePath: " + filePath);
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-			if (v < rv) {
-				int option = JOptionPane.showConfirmDialog(modiFrame,
-						"Update to v." + serverReleaseVersion.replaceAll("[^0-9.]", ""), "Update?",
-						JOptionPane.YES_NO_OPTION);
-				System.out.println(option);
-				if (option == 0) {
-					System.out.println("Server versionTag: " + serverReleaseVersion);
-					try {
-						System.out.println(updateUrl);
-						InputStream in = new URL(updateUrl).openStream();
-						Files.copy(in,
-								Paths.get(getJarExecutionDirectory()
-										+ updateUrl.split("/")[updateUrl.split("/").length - 1]),
-								StandardCopyOption.REPLACE_EXISTING);
-						Runtime.getRuntime()
-								.exec("cmd /c start " + getJarExecutionDirectory()
-										+ updateUrl.split("/")[updateUrl.split("/").length - 1] + " "
-										+ System.getProperty("java.class.path"));
-						Thread.sleep(200);
-						System.exit(0);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-
-	public static void getLastReleaseVersion(String webseite) {
-		try {
-			URL url = new URL(webseite);
-			Scanner scanner = new Scanner(url.openStream());
-			String s = null;
-			while (scanner.hasNext()) {
-				s = scanner.nextLine();
-				if (s.contains("html_url") && serverReleaseVersion == null)
-					serverReleaseVersion = s.split("/tag/v.")[1].split("\",")[0];
-				if (s.contains("browser_download_url") && updateUrl == null) {
-					updateUrl = "https" + s.split("browser_download_url\":\"https")[1].split("jar")[0] + "jar";
-				}
-				if (serverReleaseVersion != null && updateUrl != null) {
-					System.out.println("updateUrl: " + updateUrl);
-					scanner.close();
-					return;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(modiFrame, "Konnte nicht auf Updates prüfen.\n Aktuelle Version: " + version);
-			Desktop desktop = java.awt.Desktop.getDesktop();
-			try {
-				URI uri = new URI("https://github.com/jannis1602/KontinentQuiz/releases/latest");
-				desktop.browse(uri);
-			} catch (Exception e2) {
-			}
-		}
 	}
 
 	public static String getJarExecutionDirectory() {
