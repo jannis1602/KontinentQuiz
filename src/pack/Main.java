@@ -49,9 +49,9 @@ public class Main {
 		JButton jb1 = new JButton("Kontinente erkennen");
 		JButton jb2 = new JButton("Kontinente platzieren");
 		JButton jb3 = new JButton("Kontinentnamen zuordnen");
-		jb1.setFont(new Font("Arial", Font.PLAIN, 40));
-		jb2.setFont(new Font("Arial", Font.PLAIN, 40));
-		jb3.setFont(new Font("Arial", Font.PLAIN, 40));
+		jb1.setFont(new Font("ROBOTO", Font.PLAIN, 40));
+		jb2.setFont(new Font("ROBOTO", Font.PLAIN, 40));
+		jb3.setFont(new Font("ROBOTO", Font.PLAIN, 40));
 		jb1.setActionCommand("erkennen");
 		jb2.setActionCommand("platzieren");
 		jb3.setActionCommand("zuordnen");

@@ -1,5 +1,6 @@
 package pack;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -15,6 +16,7 @@ public class Kontinent {
 	public Rectangle rect;
 	public float size = 1f; // scale
 	public int dx = 0, dy = 0;
+	public boolean wrong = false;
 
 	public Kontinent(String name, BufferedImage image) {
 		this.name = name;
@@ -48,10 +50,16 @@ public class Kontinent {
 				(int) (originalImage.getHeight() * size));
 		rect = new Rectangle(rect.x, rect.y, (int) (image.getWidth()), (int) (image.getHeight()));
 		g.drawImage(image, rect.x, rect.y, image.getWidth(), image.getHeight(), null);
+		g.setColor(Color.RED);
+		// TODO add g2d & stroke
+		if (wrong) {
+			g.drawLine(rect.x, rect.y, rect.x + image.getWidth(), rect.y + image.getHeight());
+			g.drawLine(rect.x + image.getWidth(), rect.y, rect.x, rect.y + image.getHeight());
+		}
+
 	}
 
 	public boolean boxIsTouched(int x, int y) {
-//		System.out.println(name + " - " + originalImage.getWidth() + " - " + originalImage.getHeight());
 		if (x > rect.x && x < rect.x + rect.width && y > rect.y && y < rect.y + rect.height)
 			return true;
 		return false;

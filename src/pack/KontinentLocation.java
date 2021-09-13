@@ -221,8 +221,8 @@ public class KontinentLocation extends Canvas implements Runnable {
 		}
 		if (end != null) {
 			g.setColor(Color.RED);
-			g.setFont(new Font("ROBOTO", Font.PLAIN, (int) (40 * scale)));
-			g.drawString(end, 20, 20);
+			g.setFont(new Font("ROBOTO", Font.PLAIN, (int) (30 * scale)));
+			g.drawString(end, 20, (int) (28 * scale));
 		}
 
 		g.dispose();
@@ -317,6 +317,9 @@ public class KontinentLocation extends Canvas implements Runnable {
 					k.select(p.x, p.y);
 					end = null;
 					showSolution = false;
+					for (Kontinent ko : kontinentList) {
+						ko.wrong = false;
+					}
 					draggingKontinent = true;
 					return true;
 				}
@@ -370,6 +373,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		for (Kontinent k : kontinentList) {
 			if (getSolution(k.name, new Point(k.rect.x, k.rect.y), k.size) == false) {
 				wrongContinents.add(k.name);
+				k.wrong = true;
 			}
 		}
 		if (wrongContinents.size() >= 1) {
