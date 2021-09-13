@@ -2,6 +2,7 @@ package pack;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -80,6 +81,10 @@ public class KontinentLocation extends Canvas implements Runnable {
 				if (e.getKeyCode() == KeyEvent.VK_R)
 					if (selectedKontinent != null)
 						selectedKontinent.originalImage = rotateImage(selectedKontinent.originalImage, 90.0);
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					running = false;
+					new Main();
+				}
 			}
 
 			@Override
@@ -127,6 +132,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	public synchronized void stop() {
 		if (!running)
 			return;
+		frame.setVisible(false);
 		running = false;
 		try {
 			thread.join();
@@ -155,6 +161,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 				timer = System.currentTimeMillis();
 			}
 		}
+		frame.setVisible(false);
 		stop();
 	}
 
@@ -214,6 +221,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		}
 		if (end != null) {
 			g.setColor(Color.RED);
+			g.setFont(new Font("ROBOTO", Font.PLAIN, (int) (40 * scale)));
 			g.drawString(end, 20, 20);
 		}
 
