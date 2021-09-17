@@ -1,5 +1,6 @@
 package pack;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -51,10 +52,17 @@ public class Kontinent {
 		rect = new Rectangle(rect.x, rect.y, (int) (image.getWidth()), (int) (image.getHeight()));
 		g.drawImage(image, rect.x, rect.y, image.getWidth(), image.getHeight(), null);
 		g.setColor(Color.RED);
+		
+		
 		// TODO add g2d & stroke
 		if (wrong) {
-			g.drawLine(rect.x, rect.y, rect.x + image.getWidth(), rect.y + image.getHeight());
-			g.drawLine(rect.x + image.getWidth(), rect.y, rect.x, rect.y + image.getHeight());
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.setStroke(new BasicStroke(5));
+			int rand = image.getWidth() / 8;
+			g2d.drawLine(rect.x + rand, rect.y + rand, rect.x + image.getWidth() - rand * 2,
+					rect.y + image.getHeight() - rand * 2);
+			g2d.drawLine(rect.x + image.getWidth() - rand * 2, rect.y + rand, rect.x + rand,
+					rect.y + image.getHeight() - rand * 2);
 		}
 
 	}

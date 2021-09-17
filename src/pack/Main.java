@@ -90,9 +90,9 @@ public class Main {
 //				panel.add(jb3);
 		modiFrame.add(panel);
 		modiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		modiFrame.setVisible(true);
 		modiFrame.pack();
 		modiFrame.setLocationRelativeTo(null);
+		modiFrame.setVisible(true);
 		panel.requestFocus();
 
 	}

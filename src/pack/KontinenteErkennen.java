@@ -13,17 +13,22 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import image.BufferedImageLoader;
 
+/*
+ * Jannis Mattlage
+ */
 public class KontinenteErkennen {
 	private JLabel labelImg;
 	private JTextField tf;
@@ -34,13 +39,35 @@ public class KontinenteErkennen {
 	private int versuche = 0;
 	private String[] kontinente = { "afrika", "antarktis", "asien", "australien", "europa", "nordamerika",
 			"südamerika", };
-	private String kontinent = null;
+	private Kontinent kontinent = null;
 	public JFrame frame = null;
+	LinkedList<Kontinent> kontinentQueue = new LinkedList<Kontinent>();
 
-	// Kontinente erkennen - Game
+	// TODO max: list jeden kontinent min 2x --> max runs ca.20x
 
+// recognize continents - Game
 	public KontinenteErkennen() {
 		imgLoader = new BufferedImageLoader();
+		
+		// TODO 3 Listen!
+		 
+		for (int i = 0; i < kontinente.length; i++) {
+			for (int ii = 0; ii < 3; ii++)
+				kontinentQueue
+						.add(new Kontinent(kontinente[i], imgLoader.loadImage("continents/" + kontinente[i] + ".png")));
+		}
+		Random r = new Random();
+		for (int i = 0; i < 200; i++) {
+			Kontinent tempCont = kontinentQueue.get(r.nextInt(7));
+			kontinentQueue.remove(tempCont);
+			kontinentQueue.add(tempCont);
+
+		}
+
+		for (Kontinent kontinent : kontinentQueue) {
+			System.out.println(kontinent.name);
+		}
+
 		frame = new JFrame("Kontinent Quiz");
 		frame.setSize(1920, 1080);
 		JPanel panel = new JPanel();
@@ -49,13 +76,14 @@ public class KontinenteErkennen {
 		panel.setBackground(Color.DARK_GRAY);
 		BufferedImage img = imgLoader.loadImage("continents/afrika.png");
 
-		labelRichtig = new JLabel("  Richtig: 0");
-		labelFalsch = new JLabel("  Falsch: 0");
+// Correct/Wrong counter panel
+		// TODO: both in a gridlayout?
+		labelRichtig = new JLabel(" Richtig: 0");
 		labelRichtig.setForeground(Color.GREEN);
-		labelFalsch.setForeground(Color.RED);
 		labelRichtig.setFont(new Font("ROBOTO", Font.PLAIN, 18));
+		labelFalsch = new JLabel(" Falsch: 0");
+		labelFalsch.setForeground(Color.RED);
 		labelFalsch.setFont(new Font("ROBOTO", Font.PLAIN, 18));
-
 		GridBagConstraints c0 = new GridBagConstraints();
 		c0.fill = GridBagConstraints.BOTH;
 		c0.gridx = 0;
@@ -73,8 +101,8 @@ public class KontinenteErkennen {
 		c01.gridwidth = 1;
 		panel.add(labelFalsch, c01);
 
+// ContinentImage Panel
 		labelImg = new JLabel(new ImageIcon(img), JLabel.CENTER);
-
 		GridBagConstraints c1 = new GridBagConstraints();
 		c1.fill = GridBagConstraints.BOTH;
 		c1.gridx = 0;
@@ -84,6 +112,7 @@ public class KontinenteErkennen {
 		c1.gridwidth = 1;
 		panel.add(labelImg, c1);
 
+// Continent Name Panel
 		Panel panelText = new Panel();
 		panelText.setLayout(new FlowLayout());
 		JLabel labelQuestion = new JLabel("Name des Kontinents: ");
@@ -133,6 +162,8 @@ public class KontinenteErkennen {
 		c2.weighty = 1;
 		c2.gridwidth = 8;
 		panel.add(panelText, c2);
+
+// Show the frame
 		frame.add(panel);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
@@ -140,18 +171,18 @@ public class KontinenteErkennen {
 	}
 
 	private void checkAnswere() {
-
-		if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent)) {
+		if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent.name)) {
 			richtig++;
-			labelRichtig.setText("  Richtig: " + richtig);
+			labelRichtig.setText(" Richtig: " + richtig);
 			loadImage();
 			versuche = 0;
 		} else {
 			versuche++;
 			falsch++;
-			labelFalsch.setText("  Falsch: " + falsch);
+			labelFalsch.setText(" Falsch: " + falsch);
 			if (versuche >= 3) {
 				versuche = 0;
+				JOptionPane.showMessageDialog(frame, "3x falsch! Richtine Antwort: " + kontinent.name);
 				loadImage();
 			}
 		}
@@ -159,14 +190,27 @@ public class KontinenteErkennen {
 	}
 
 	private void loadImage() {
+//		Random r = new Random();
+//		String kont = kontinente[r.nextInt(6)];
+//		while (kont == kontinent)
+//			kont = kontinente[r.nextInt(6)];
+//		BufferedImage img = imgLoader.loadImage("continents/" + kont + ".png");
+//		kontinent = kont;
+//		img = rotate(img, r.nextInt(11) * 90.0);
+//		labelImg.setIcon(new ImageIcon(img));
+		if (kontinentQueue.size() < 1) {
+			JOptionPane.showMessageDialog(frame, "ENDE");
+			return;
+		}
 		Random r = new Random();
-		String kont = kontinente[r.nextInt(6)];
-		while (kont == kontinent)
-			kont = kontinente[r.nextInt(6)];
-		BufferedImage img = imgLoader.loadImage("continents/" + kont + ".png");
+		Kontinent kont = kontinentQueue.get(r.nextInt(6));
+		kontinentQueue.remove(kont);
+		if (kontinent != null)
+			while (kont.name == kontinent.name)
+				kont = new Kontinent(kontinente[r.nextInt(6)], imgLoader.loadImage("continents/" + kont.name + ".png"));
 		kontinent = kont;
-		img = rotate(img, r.nextInt(11) * 90.0);
-		labelImg.setIcon(new ImageIcon(img));
+		kont.image = rotate(kont.originalImage, r.nextInt(11) * 90.0);
+		labelImg.setIcon(new ImageIcon(kont.image));
 	}
 
 	public BufferedImage rotate(BufferedImage image, Double degrees) {

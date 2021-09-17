@@ -41,6 +41,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	public LinkedList<Btn> btnList;
 	public static Point mouseXY = new Point(0, 0);
 
+// Place continents - Game
 	public KontinentLocation() {
 		start();
 	}
@@ -207,10 +208,13 @@ public class KontinentLocation extends Canvas implements Runnable {
 
 		}
 		if (selectedKontinent != null) {
-			selectedKontinent.render(g, w() / 7, h() - rec, w() / 7, rec);
-			g.setColor(Color.BLUE);
-			g.drawRect(selectedKontinent.rect.x, selectedKontinent.rect.y, selectedKontinent.rect.width,
-					selectedKontinent.rect.height);
+			try {
+				selectedKontinent.render(g, w() / 7, h() - rec, w() / 7, rec);
+				g.setColor(Color.BLUE);
+				g.drawRect(selectedKontinent.rect.x, selectedKontinent.rect.y, selectedKontinent.rect.width,
+						selectedKontinent.rect.height);
+			} catch (Exception e) {
+			}
 		}
 
 		if (selectedKontinent != null && draggingKontinent) {
@@ -286,7 +290,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 			}
 			break;
 		case "solutionBtn":
-			showSolution = !showSolution;
+			showSolution = true;// !showSolution;
 			break;
 		case "resetBtn":
 			Random r = new Random();
@@ -316,7 +320,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 					selectedKontinent = k;
 					k.select(p.x, p.y);
 					end = null;
-					showSolution = false;
+//					showSolution = false;
 					for (Kontinent ko : kontinentList) {
 						ko.wrong = false;
 					}
@@ -377,7 +381,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 			}
 		}
 		if (wrongContinents.size() >= 1) {
-			end = "Verloren! Falsch: ";
+			end = "Fehler! Falsch: ";
 			for (String s : wrongContinents) {
 				end += s + " & ";
 			}
@@ -390,7 +394,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 		JOptionPane.showMessageDialog(this, end);
 	}
 
-	private boolean getSolution(String name, Point p, float s) { // kontinent
+	private boolean getSolution(String name, Point p, float s) { // Kontinent
 		Point point = new Point(0, 0);
 		Float cScale = 0.0f;
 		switch (name) {
