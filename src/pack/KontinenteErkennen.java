@@ -41,32 +41,38 @@ public class KontinenteErkennen {
 			"südamerika", };
 	private Kontinent kontinent = null;
 	public JFrame frame = null;
-	LinkedList<Kontinent> kontinentQueue = new LinkedList<Kontinent>();
-
-	// TODO max: list jeden kontinent min 2x --> max runs ca.20x
+	LinkedList<Kontinent> kontinentQueue;
 
 // recognize continents - Game
 	public KontinenteErkennen() {
 		imgLoader = new BufferedImageLoader();
-		
+		kontinentQueue = new LinkedList<Kontinent>();
 		// TODO 3 Listen!
-		 
-		for (int i = 0; i < kontinente.length; i++) {
-			for (int ii = 0; ii < 3; ii++)
-				kontinentQueue
+		LinkedList<Kontinent> tempQueue = new LinkedList<Kontinent>();
+		for (int ii = 0; ii < 3; ii++) {
+			for (int i = 0; i < kontinente.length; i++) {
+				tempQueue
 						.add(new Kontinent(kontinente[i], imgLoader.loadImage("continents/" + kontinente[i] + ".png")));
+			}
+			Random r = new Random();
+			for (int i = 0; i < 100; i++) {
+				Kontinent tempCont = tempQueue.get(r.nextInt(tempQueue.size()));
+				tempQueue.remove(tempCont);
+				tempQueue.add(tempCont);
+			}
+			if (kontinentQueue.size() >= 1)
+				if (kontinentQueue.getLast().name == tempQueue.getFirst().name) {
+					tempQueue.addLast(tempQueue.getFirst());
+					tempQueue.removeFirst();
+				}
+			kontinentQueue.addAll(tempQueue);
+			tempQueue.clear();
 		}
-		Random r = new Random();
-		for (int i = 0; i < 200; i++) {
-			Kontinent tempCont = kontinentQueue.get(r.nextInt(7));
-			kontinentQueue.remove(tempCont);
-			kontinentQueue.add(tempCont);
-
-		}
-
-		for (Kontinent kontinent : kontinentQueue) {
-			System.out.println(kontinent.name);
-		}
+		kontinentQueue.removeLast();
+//		System.out.println("KontinentQueue: ");
+//		for (Kontinent kontinent : kontinentQueue) {
+//			System.out.println(kontinent.name);
+//		}
 
 		frame = new JFrame("Kontinent Quiz");
 		frame.setSize(1920, 1080);
@@ -171,21 +177,22 @@ public class KontinenteErkennen {
 	}
 
 	private void checkAnswere() {
-		if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent.name)) {
-			richtig++;
-			labelRichtig.setText(" Richtig: " + richtig);
-			loadImage();
-			versuche = 0;
-		} else {
-			versuche++;
-			falsch++;
-			labelFalsch.setText(" Falsch: " + falsch);
-			if (versuche >= 3) {
-				versuche = 0;
-				JOptionPane.showMessageDialog(frame, "3x falsch! Richtine Antwort: " + kontinent.name);
+		if (kontinentQueue.size() < 1)
+			if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent.name)) {
+				richtig++;
+				labelRichtig.setText(" Richtig: " + richtig);
 				loadImage();
+				versuche = 0;
+			} else {
+				versuche++;
+				falsch++;
+				labelFalsch.setText(" Falsch: " + falsch);
+				if (versuche >= 3) {
+					versuche = 0;
+					JOptionPane.showMessageDialog(frame, "3x falsch! Richtine Antwort: " + kontinent.name);
+					loadImage();
+				}
 			}
-		}
 		tf.setText(null);
 	}
 
@@ -199,18 +206,14 @@ public class KontinenteErkennen {
 //		img = rotate(img, r.nextInt(11) * 90.0);
 //		labelImg.setIcon(new ImageIcon(img));
 		if (kontinentQueue.size() < 1) {
-			JOptionPane.showMessageDialog(frame, "ENDE");
+			JOptionPane.showMessageDialog(frame, "ENDE!" + " Richtig: " + richtig + " Falsch: " + falsch);
 			return;
 		}
 		Random r = new Random();
-		Kontinent kont = kontinentQueue.get(r.nextInt(6));
-		kontinentQueue.remove(kont);
-		if (kontinent != null)
-			while (kont.name == kontinent.name)
-				kont = new Kontinent(kontinente[r.nextInt(6)], imgLoader.loadImage("continents/" + kont.name + ".png"));
-		kontinent = kont;
-		kont.image = rotate(kont.originalImage, r.nextInt(11) * 90.0);
-		labelImg.setIcon(new ImageIcon(kont.image));
+		kontinent = kontinentQueue.getFirst();
+		kontinentQueue.removeFirst();
+		kontinent.image = rotate(kontinent.originalImage, r.nextInt(11) * 90.0);
+		labelImg.setIcon(new ImageIcon(kontinent.image));
 	}
 
 	public BufferedImage rotate(BufferedImage image, Double degrees) {
