@@ -47,7 +47,6 @@ public class KontinenteErkennen {
 	public KontinenteErkennen() {
 		imgLoader = new BufferedImageLoader();
 		kontinentQueue = new LinkedList<Kontinent>();
-		// TODO 3 Listen!
 		LinkedList<Kontinent> tempQueue = new LinkedList<Kontinent>();
 		for (int ii = 0; ii < 3; ii++) {
 			for (int i = 0; i < kontinente.length; i++) {
@@ -69,11 +68,7 @@ public class KontinenteErkennen {
 			tempQueue.clear();
 		}
 		kontinentQueue.removeLast();
-//		System.out.println("KontinentQueue: ");
-//		for (Kontinent kontinent : kontinentQueue) {
-//			System.out.println(kontinent.name);
-//		}
-
+		
 		frame = new JFrame("Kontinent Quiz");
 		frame.setSize(1920, 1080);
 		JPanel panel = new JPanel();
@@ -197,14 +192,6 @@ public class KontinenteErkennen {
 	}
 
 	private void loadImage() {
-//		Random r = new Random();
-//		String kont = kontinente[r.nextInt(6)];
-//		while (kont == kontinent)
-//			kont = kontinente[r.nextInt(6)];
-//		BufferedImage img = imgLoader.loadImage("continents/" + kont + ".png");
-//		kontinent = kont;
-//		img = rotate(img, r.nextInt(11) * 90.0);
-//		labelImg.setIcon(new ImageIcon(img));
 		if (kontinentQueue.size() < 1) {
 			JOptionPane.showMessageDialog(frame, "ENDE!" + " Richtig: " + richtig + " Falsch: " + falsch);
 			return;

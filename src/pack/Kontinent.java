@@ -52,9 +52,6 @@ public class Kontinent {
 		rect = new Rectangle(rect.x, rect.y, (int) (image.getWidth()), (int) (image.getHeight()));
 		g.drawImage(image, rect.x, rect.y, image.getWidth(), image.getHeight(), null);
 		g.setColor(Color.RED);
-		
-		
-		// TODO add g2d & stroke
 		if (wrong) {
 			Graphics2D g2d = (Graphics2D) g;
 			g2d.setStroke(new BasicStroke(5));

@@ -98,7 +98,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 			}
 		});
 		frame = new JFrame("Kontinent Quiz");
-//		frame.setIconImage(loadImage("continents/" + kontinentList.getFirst().name));
 		frame.add(this);
 		frame.setSize(1920, 1080); // 1280, 720
 		frame.setLocationRelativeTo(null);
@@ -149,17 +148,17 @@ public class KontinentLocation extends Canvas implements Runnable {
 		double amountOfTicks = 30.0;
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
-		long timer = System.currentTimeMillis();
 		while (running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
 			lastTime = now;
 			while (delta >= 1) {
-				render();
+				try {
+					render();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				delta--;
-			}
-			if (System.currentTimeMillis() - timer > 1000) {
-				timer = System.currentTimeMillis();
 			}
 		}
 		frame.setVisible(false);
@@ -186,7 +185,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 		g.fillRect(w() - (int) (450 * scale), 0, (int) (450 * scale), h() - w() / 7);
 		g.setColor(Color.BLACK);
 		g.drawRect(w() - (int) (450 * scale), 0, (int) (450 * scale), h() - w() / 7);
-
 		for (Btn tempBtn : btnList)
 			tempBtn.render(g, getWidth(), getHeight(), scale);
 
@@ -205,7 +203,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 		for (int i = 0; i < 7; i++) {
 			kontinentList.get(i).moveInObjectScreen(new Rectangle(0, 0, w(), h()));
 			kontinentList.get(i).render(g, w() / 7 * i, h() - rec, w() / 7, rec);
-
 		}
 		if (selectedKontinent != null) {
 			try {
@@ -284,13 +281,11 @@ public class KontinentLocation extends Canvas implements Runnable {
 		case "checkBtn":
 			if (!draggingKontinent) {
 				selectedKontinent = null;
-//				for (Kontinent k : kontinentList)
-//					System.out.println(k.name + " => " + k.rect.x + "|" + k.rect.y + " - " + k.size);
 				checkAnswere();
 			}
 			break;
 		case "solutionBtn":
-			showSolution = true;// !showSolution;
+			showSolution = true;
 			break;
 		case "resetBtn":
 			Random r = new Random();
@@ -320,7 +315,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 					selectedKontinent = k;
 					k.select(p.x, p.y);
 					end = null;
-//					showSolution = false;
 					for (Kontinent ko : kontinentList) {
 						ko.wrong = false;
 					}
@@ -329,8 +323,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 				}
 			}
 		} else if (draggingKontinent) {
-//			System.out.println(selectedKontinent.name + " - " + selectedKontinent.rect.x + "|"
-//					+ selectedKontinent.rect.y + " - " + selectedKontinent.size);
 			draggingKontinent = false;
 			return false;
 		}
@@ -348,15 +340,11 @@ public class KontinentLocation extends Canvas implements Runnable {
 			return false;
 	}
 
-	public void scroll(int amount) {// , int mx, int my) {
+	public void scroll(int amount) {
 		if (selectedKontinent != null) {
 			if (amount > 0) { // TODO mouse Position...
-//				selectedKontinent.rect.x -= (selectedKontinent.rect.width * 0.02f) / 2;
-//				selectedKontinent.rect.y -= (selectedKontinent.rect.height * 0.02f) / 2;
 				selectedKontinent.size += 0.02f;
 			} else {
-//				selectedKontinent.rect.x += (selectedKontinent.rect.width * 0.02f) / 2;
-//				selectedKontinent.rect.y += (selectedKontinent.rect.height * 0.02f) / 2;
 				selectedKontinent.size -= 0.02f;
 			}
 		}
@@ -430,12 +418,6 @@ public class KontinentLocation extends Canvas implements Runnable {
 			break;
 		}
 		Float sc = (s - cScale * scale);
-//		System.out.println(name + " - distance(+-40) " + Point.distance(p.x, p.y, point.x * scale, point.y * scale)
-//				+ " - diff. scale(+-0.08): " + sc);
-//		System.out.println(name + " - " + p.x + " -> " + point.x * scale + " || " + p.y + " -> " + point.y * scale
-//				+ " || " + s + " -> " + cScale * scale);
-//		System.out.println(name + " - " + p.x * (2 - scale) + " -> " + point.x + " || " + p.y * (2 - scale) + " -> "
-//				+ point.y + " || " + s + " -> " + cScale * scale);
 		if (Point.distance(p.x, p.y, point.x * scale, point.y * scale) < 40 // 20
 				&& (sc < 0.08f && sc > -0.08f))
 			return true;
