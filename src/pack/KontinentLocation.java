@@ -297,6 +297,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 			for (int i = 0; i < 7; i++) {
 				kontinentList.get(i).size = (frame.getWidth() / 7f) / kontinentList.get(i).originalImage.getWidth();
 				kontinentList.get(i).rect = new Rectangle(w() / 7 * i, h() - frame.getWidth() / 7, 10, 10);
+				kontinentList.get(i).wrong = false;
 			}
 			showSolution = false;
 			selectedKontinent = null;
@@ -315,9 +316,10 @@ public class KontinentLocation extends Canvas implements Runnable {
 					selectedKontinent = k;
 					k.select(p.x, p.y);
 					end = null;
-					for (Kontinent ko : kontinentList) {
-						ko.wrong = false;
-					}
+					k.wrong=false;
+//					for (Kontinent ko : kontinentList) {
+//						ko.wrong = false;
+//					}
 					draggingKontinent = true;
 					return true;
 				}
