@@ -316,7 +316,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 					selectedKontinent = k;
 					k.select(p.x, p.y);
 					end = null;
-					k.wrong=false;
+					k.wrong = false;
 //					for (Kontinent ko : kontinentList) {
 //						ko.wrong = false;
 //					}
@@ -376,8 +376,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 				end += s + " & ";
 			}
 			end = end.substring(0, end.length() - 2);
-
-			JOptionPane.showMessageDialog(this, end);
+//			JOptionPane.showMessageDialog(this, end);
 			return;
 		}
 		end = "Gewonnen!";

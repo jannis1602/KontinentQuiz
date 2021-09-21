@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -32,7 +31,7 @@ import image.BufferedImageLoader;
 public class KontinenteErkennen {
 	private JLabel labelImg;
 	private JTextField tf;
-	JLabel labelRichtig, labelFalsch;
+	private JLabel labelRichtig, labelFalsch;
 	private static BufferedImageLoader imgLoader;
 	private int richtig = 0;
 	private int falsch = 0;
@@ -41,7 +40,8 @@ public class KontinenteErkennen {
 			"südamerika", };
 	private Kontinent kontinent = null;
 	public JFrame frame = null;
-	LinkedList<Kontinent> kontinentQueue;
+	private LinkedList<Kontinent> kontinentQueue;
+	private JPanel panel, panelText;
 
 // recognize continents - Game
 	public KontinenteErkennen() {
@@ -68,10 +68,10 @@ public class KontinenteErkennen {
 			tempQueue.clear();
 		}
 		kontinentQueue.removeLast();
-		
+
 		frame = new JFrame("Kontinent Quiz");
 		frame.setSize(1920, 1080);
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel.setBackground(Color.DARK_GRAY);
@@ -114,14 +114,14 @@ public class KontinenteErkennen {
 		panel.add(labelImg, c1);
 
 // Continent Name Panel
-		Panel panelText = new Panel();
+		panelText = new JPanel();
 		panelText.setLayout(new FlowLayout());
 		JLabel labelQuestion = new JLabel("Name des Kontinents: ");
 		labelQuestion.setFont(new Font("ROBOTO", Font.PLAIN, 18));
 		panelText.add(labelQuestion);
 		tf = new JTextField(20);
 		tf.setFont(new Font("ROBOTO", Font.PLAIN, 18));
-		tf.addKeyListener(new KeyListener() {
+		KeyListener listener = new KeyListener() {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -141,7 +141,9 @@ public class KontinenteErkennen {
 			public void keyPressed(KeyEvent e) {
 
 			}
-		});
+		};
+		tf.addKeyListener(listener);
+		frame.addKeyListener(listener);
 		panelText.add(tf);
 		JButton btnOK = new JButton("OK");
 		btnOK.setFont(new Font("ROBOTO", Font.PLAIN, 18));
@@ -172,30 +174,54 @@ public class KontinenteErkennen {
 	}
 
 	private void checkAnswere() {
-		if (kontinentQueue.size() < 1)
-			if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent.name)) {
-				richtig++;
-				labelRichtig.setText(" Richtig: " + richtig);
-				loadImage();
-				versuche = 0;
-			} else {
-				versuche++;
-				falsch++;
-				labelFalsch.setText(" Falsch: " + falsch);
-				if (versuche >= 3) {
+		if (!(kontinentQueue.size() <= 1 && kontinent == null)) {
+			if (tf.getText().length() >= 2)
+				if (tf.getText().toLowerCase().replace(" ", "").equals(kontinent.name)) {
+					richtig++;
+					labelRichtig.setText(" Richtig: " + richtig);
 					versuche = 0;
-					JOptionPane.showMessageDialog(frame, "3x falsch! Richtine Antwort: " + kontinent.name);
+					if (kontinentQueue.size() < 1) {
+						kontinent = null;
+						tf.setText(null);
+						labelImg.setIcon(null);
+						labelImg.setFont(new Font("ROBOTO", Font.PLAIN, 30));
+						labelImg.setForeground(Color.RED);
+						labelImg.setText("ENDE!" + " Richtig: " + richtig + " Falsch: " + falsch
+								+ " - ESC um zum Hauptmenü zurückzukehren");
+						tf.setEditable(false);
+						panel.remove(panelText);
+						return;
+					}
 					loadImage();
+				} else {
+					versuche++;
+					labelFalsch.setText(" Falsch: " + falsch);
+					if (versuche >= 2) {
+						falsch++;
+						versuche = 0;
+						labelFalsch.setText(" Falsch: " + falsch);
+						tf.setText(null);
+						JOptionPane.showMessageDialog(frame, "2x falsch! Richtine Antwort: " + kontinent.name);
+						if (kontinentQueue.size() < 1) {
+							kontinent = null;
+							tf.setText(null);
+							labelImg.setIcon(null);
+							labelImg.setFont(new Font("ROBOTO", Font.PLAIN, 30));
+							labelImg.setForeground(Color.RED);
+							labelImg.setText("ENDE!" + " Richtig: " + richtig + " Falsch: " + falsch
+									+ " - ESC um zum Hauptmenü zurückzukehren");
+							tf.setEditable(false);
+							panel.remove(panelText);
+							return;
+						}
+						loadImage();
+					}
 				}
-			}
-		tf.setText(null);
+			tf.setText(null);
+		}
 	}
 
 	private void loadImage() {
-		if (kontinentQueue.size() < 1) {
-			JOptionPane.showMessageDialog(frame, "ENDE!" + " Richtig: " + richtig + " Falsch: " + falsch);
-			return;
-		}
 		Random r = new Random();
 		kontinent = kontinentQueue.getFirst();
 		kontinentQueue.removeFirst();
