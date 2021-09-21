@@ -37,7 +37,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 	private BufferedImage rand, worldImage;
 	private LinkedList<Kontinent> kontinentList;
 	private Kontinent selectedKontinent = null;
-	private String end = null;
+//	private String end = null;
 	public LinkedList<Btn> btnList;
 	public static Point mouseXY = new Point(0, 0);
 
@@ -220,11 +220,11 @@ public class KontinentLocation extends Canvas implements Runnable {
 			int my = (int) b.getY();
 			selectedKontinent.mouse(mx, my);
 		}
-		if (end != null) {
-			g.setColor(Color.RED);
-			g.setFont(new Font("ROBOTO", Font.PLAIN, (int) (30 * scale)));
-			g.drawString(end, 20, (int) (28 * scale));
-		}
+//		if (end != null) {
+//			g.setColor(Color.RED);
+//			g.setFont(new Font("ROBOTO", Font.PLAIN, (int) (30 * scale)));
+//			g.drawString(end, 20, (int) (28 * scale));
+//		}
 
 		g.dispose();
 		bs.show();
@@ -301,7 +301,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 			}
 			showSolution = false;
 			selectedKontinent = null;
-			end = null;
+//			end = null;
 			break;
 		default:
 			break;
@@ -315,7 +315,7 @@ public class KontinentLocation extends Canvas implements Runnable {
 				if (k.boxIsTouched(p.x, p.y) && getPixelInImage(new Point(p.x - k.rect.x, p.y - k.rect.y), k.image)) {
 					selectedKontinent = k;
 					k.select(p.x, p.y);
-					end = null;
+//					end = null;
 					k.wrong = false;
 //					for (Kontinent ko : kontinentList) {
 //						ko.wrong = false;
@@ -371,16 +371,17 @@ public class KontinentLocation extends Canvas implements Runnable {
 			}
 		}
 		if (wrongContinents.size() >= 1) {
-			end = "Fehler! Falsch: ";
-			for (String s : wrongContinents) {
-				end += s + " & ";
-			}
-			end = end.substring(0, end.length() - 2);
+			JOptionPane.showMessageDialog(this, "Verloren!");
+//			end = "Fehler! Falsch: ";
+//			for (String s : wrongContinents) {
+//				end += s + " & ";
+//			}
+//			end = end.substring(0, end.length() - 2);
 //			JOptionPane.showMessageDialog(this, end);
 			return;
-		}
-		end = "Gewonnen!";
-		JOptionPane.showMessageDialog(this, end);
+		}else JOptionPane.showMessageDialog(this, "Gewonnen!");
+//		end = "Gewonnen!";
+//		JOptionPane.showMessageDialog(this, end);
 	}
 
 	private boolean getSolution(String name, Point p, float s) { // Kontinent

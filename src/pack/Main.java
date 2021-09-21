@@ -13,7 +13,7 @@ import javax.swing.JPanel;
  */
 
 public class Main {
-	public static final String version = "0.2.6";
+	public static final String version = "0.2.7";
 	public static KontinentLocation kontinentLocation = null;
 	static KontinenteErkennen kontinenteErkennen = null;
 	static JFrame modiFrame;
